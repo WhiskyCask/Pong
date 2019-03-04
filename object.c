@@ -38,11 +38,11 @@ void move_object(Object * object) {
 	object->pos_y += object->vel_y;
 	
 	/* Om objektet i fråga är påväg över någon kant, skifta riktning */
-	if (!(0 <= object->pos_x && object->pos_x + object->geometry->width <= LCD_WIDTH)) {
+	if (!(0 <= object->pos_x && object->pos_x + object->geometry->width < LCD_WIDTH)) {
 		object->vel_x *= -1;
 	}
 	
-	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height <= LCD_HEIGHT)) {
+	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {
 		object->vel_y *= -1;
 	}
 	

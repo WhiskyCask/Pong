@@ -3,7 +3,7 @@
  *
  */
 
-#include "graphicdisplay.h
+#include "graphicdisplay.h"
 
 static const enum {
 	
@@ -216,15 +216,29 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 	
 	/* Skapa en bitmask för y-koordinaten */
 	
-	uint8_t page = (y - 1) / 8;
-	uint8_t add = x - 1;
+	uint8_t page = (y) / 8;
+	uint8_t add = x;
 	
-	uint8_t mask = 1 << ((y - 1) & 7); /* & 7 är ekvivalnet med % 8 */
+	uint8_t mask;
+	uint8_t bitIndex = (((y)+8) % 8);
+	switch(bitIndex){
+		case 0: mask = 0b00000001; break;
+		case 1: mask = 0b00000010; break;
+		case 2: mask = 0b00000100; break;
+		case 3: mask = 0b00001000; break;
+		case 4: mask = 0b00010000; break;
+		case 5: mask = 0b00100000; break;
+		case 6: mask = 0b01000000; break;
+		case 7: mask = 0b10000000; break;
+	}
+	
+	
+	//uint8_t mask = 1 << ((y - 1) & 7); /* & 7 är ekvivalnet med % 8 */ // Vad är detta? &?
 	if (!set) {
 		mask = ~mask;
 	}
 	
-	uint8_t temp = buffer[8*add+page];
+	uint8_t temp = buffer.buf[8*add+page];
 	
 	if (!set) {
 		mask &= temp;
@@ -233,15 +247,15 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 		mask |= temp;
 	}
 	
-	buffer[8*add+page] = mask;
+	buffer.buf[8*add+page] = mask;
 	
 }
 
 void draw_buffer(){
 	
-	for(char i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
-		page = i%8;
-		add = i/8;
+	for(uint32_t i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
+		uint8_t page = i%8;
+		uint8_t add = i/8;
 		
 		uint8_t controller;
 		if(add < LCD_WIDTH/2){
@@ -251,9 +265,11 @@ void draw_buffer(){
 			add = add - (LCD_WIDTH/2);
 		}
 		
+		graphic_write_command(LCD_SET_PAGE | page, controller); /* Ordningen i vilken man ställer page och address verkar spela roll */
 		graphic_write_command(LCD_SET_ADD | add, controller);
-		graphic_write_command(LCD_SET_PAGE | page, controller);
-		graphic_write_data(buffer[i], controller);
-		
+		graphic_write_data(buffer.buf[i], controller);
 	}
+
+
+
 }

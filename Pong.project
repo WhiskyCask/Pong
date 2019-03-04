@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="Pong" Version="10.0.0" InternalType="User templates">
-  <VirtualDirectory Name="include">
-    <File Name="include/graphicdisplay.h"/>
-    <File Name="include/object.h"/>
-    <File Name="include/keyboard.h"/>
-    <File Name="include/intdef.h"/>
-    <File Name="include/GPIO.h"/>
-    <File Name="include/delay.h"/>
-    <File Name="include/asciidisplay.h"/>
-  </VirtualDirectory>
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>
@@ -26,6 +17,15 @@
  }]]]>
     </Plugin>
   </Plugins>
+  <VirtualDirectory Name="include">
+    <File Name="include/graphicdisplay.h"/>
+    <File Name="include/object.h"/>
+    <File Name="include/keyboard.h"/>
+    <File Name="include/intdef.h"/>
+    <File Name="include/GPIO.h"/>
+    <File Name="include/delay.h"/>
+    <File Name="include/asciidisplay.h"/>
+  </VirtualDirectory>
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
@@ -75,8 +75,8 @@ monitor restart</PostConnectCommands>
       </Debugger>
       <PreBuild/>
       <PostBuild>
-        <Command Enabled="yes">$(GccArmDir)/bin/arm-none-eabi-objcopy -S -O srec  $(IntermediateDirectory)/$(ProjectName).elf $(IntermediateDirectory)/$(ProjectName).s19</Command>
-        <Command Enabled="yes">$(GccArmDir)/bin/arm-none-eabi-objdump -D -S $(IntermediateDirectory)/$(ProjectName).elf &gt; $(IntermediateDirectory)/$(ProjectName).dass</Command>
+        <Command Enabled="no">#$(GccArmDir)/bin/arm-none-eabi-objcopy -S -O srec  $(IntermediateDirectory)/$(ProjectName).elf $(IntermediateDirectory)/$(ProjectName).s19</Command>
+        <Command Enabled="no">#$(GccArmDir)/bin/arm-none-eabi-objdump -D -S $(IntermediateDirectory)/$(ProjectName).elf &gt; $(IntermediateDirectory)/$(ProjectName).dass</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

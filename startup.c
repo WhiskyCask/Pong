@@ -38,11 +38,9 @@ int main(void)
 		graphic_clear_screen();
 	#endif
 	
-	Object ball = create_ball(0, 0, 0, 0);
+	Object ball = create_ball(10, 10, 0, 0);
 	uint8_t k;
 	while(1) {
-		ball.move(&ball);
-		delay_milli(40); /* 25 bilder per sekund */
 		k = keyb();
 		switch(k) {
 			
@@ -86,6 +84,9 @@ int main(void)
 				/* Om ingen knapp är nedtryckt, nollställ hastigheten */
 				ball.set_vel(&ball, 0, 0);
 		}
+		ball.move(&ball);
+		draw_buffer();
+		delay_milli(40); /* 25 bilder per sekund */		
 	}
 	
 	return 0;
