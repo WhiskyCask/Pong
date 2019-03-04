@@ -243,3 +243,24 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 	graphic_write_data(mask, controller);
 	
 }
+
+void draw_buffer(*pBBuffer buffer){
+	
+	for(char i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
+		page = i%8;
+		add = i/8;
+		
+		uint8_t controller;
+		if(add < LCD_WIDTH/2){
+			controller = B_CS1;
+		}else{
+			controller = B_CS2;
+			add = add - (LCD_WIDTH/2);
+		}
+		
+		graphic_write_command(LCD_SET_ADD | add, controller);
+		graphic_write_command(LCD_SET_PAGE | page, controller);
+		graphic_write_data(buffer[i], controller);
+		
+	}
+}
