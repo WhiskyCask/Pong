@@ -3,7 +3,7 @@
  *
  */
 
-#include "graphicdisplay.h"
+#include "graphicdisplay.h
 
 static const enum {
 	
@@ -32,6 +32,8 @@ const uint8_t LCD_PAGES = 8; /* Antalet pages, y-koordinater */
 const uint8_t LCD_ADDS = 64; /* Antalet addresses, x-koorinater */
 const uint8_t LCD_WIDTH = 128; /* Antalet pixlar på bredden */
 const uint8_t LCD_HEIGHT = 64; /* Antalet pixlar på höjden */	
+
+static BBuffer buffer;
 
 /* Adressera grafisk display och ettställ de bitar som är 1 i x */
 static void graphic_ctrl_bit_set(uint8_t x)
@@ -206,32 +208,23 @@ void graphic_initialise()
 
 void pixel(uint8_t x, uint8_t y, uint8_t set)
 {
+	/*Make sure pixel is within bounds*/
 	if ((x >= LCD_WIDTH && y >= LCD_HEIGHT)) {
 		return;
 	}
+	
+	
 	/* Skapa en bitmask för y-koordinaten */
+	
 	uint8_t page = (y - 1) / 8;
+	uint8_t add = x - 1;
+	
 	uint8_t mask = 1 << ((y - 1) & 7); /* & 7 är ekvivalnet med % 8 */
 	if (!set) {
 		mask = ~mask;
 	}
-	/* Bestäm fysiska koordinater och välj styrkrets */
-	uint8_t controller;
-	uint8_t x_fysisk;
 	
-	if (x < LCD_WIDTH / 2) {
-		controller = B_CS1;
-		x_fysisk = x - 1;
-	}
-	else {
-		controller = B_CS2;
-		x_fysisk = x - (LCD_WIDTH / 2 + 1);
-	}
-	
-	graphic_write_command(LCD_SET_ADD | x_fysisk, controller);
-	graphic_write_command(LCD_SET_PAGE | page, controller);
-	uint8_t temp = graphic_read_data(controller);
-	graphic_write_command(LCD_SET_ADD | x_fysisk, controller);
+	uint8_t temp = buffer[8*add+page];
 	
 	if (!set) {
 		mask &= temp;
@@ -240,11 +233,11 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 		mask |= temp;
 	}
 	
-	graphic_write_data(mask, controller);
+	buffer[8*add+page] = mask;
 	
 }
 
-void draw_buffer(*pBBuffer buffer){
+void draw_buffer(){
 	
 	for(char i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
 		page = i%8;
