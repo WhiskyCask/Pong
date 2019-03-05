@@ -6,6 +6,8 @@
 
 #include "object.h"
 #include "graphicdisplay.h"
+#include <stdbool.h>
+
 
 const Geometry geometry_ball = { 12, 4, 4, {
 			{0, 1}, {0, 2}, 
@@ -42,12 +44,20 @@ void clear_object(Object * object)
 	}
 }
 
-void move_object(Object * object) {
+void translate_object(Object * object) {
 	
-	clear_object(object);
+	
 	
 	object->pos_x += object->vel_x;
 	object->pos_y += object->vel_y;
+	
+	
+	
+}
+
+void move_object(Object * object){
+	clear_object(object);
+	translate_object(object);
 	
 	/* Om objektet i fråga är påväg över någon kant, skifta riktning */
 	if (!(0 <= object->pos_x && object->pos_x + object->geometry->width < LCD_WIDTH)) {
@@ -57,8 +67,37 @@ void move_object(Object * object) {
 	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {
 		object->vel_y *= -1;
 	}
-	
 	draw_object(object);
+}
+
+void intersects(Object * o1, Object * o2){
+	
+}
+
+void move_ball(Object * object){
+	clear_object(object);
+	translate_object(object);
+	
+	/* Kollision med paddle? Ändra riktning */
+	if(intersects())
+
+	/* På väg över långsidorna? Ändra riktning */
+	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {
+		object->vel_y *= -1;
+	}
+	
+	/* På väg över kortsidorna? Ändra poäng och återställ position, slumpa hastighet*/
+	if (!(0 <= object->pos_x && object->pos_x + object->geometry->width < LCD_WIDTH)) {
+		object->pos_x = 63;
+		object->pos_y = 32;
+		object->vel_x = 3;
+		object->vel_y = 3;
+	}
+	draw_object(object);
+
+}
+
+void move_paddle(Object * object){
 	
 }
 
@@ -75,7 +114,7 @@ Object create_ball(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y) {
 	vel_x, vel_y,
 	draw_object,
 	clear_object,
-	move_object,
+	move_ball,
 	set_object_vel
 	};
 }

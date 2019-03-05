@@ -89,8 +89,8 @@ int main(void)
 
 		}
 		ball.move(&ball);
-		ball.move(&leftpaddle);
-		ball.move(&rightpaddle);
+		leftpaddle.move(&leftpaddle);
+		rightpaddle.move(&rightpaddle);
 		draw_buffer();
 		delay_milli(40); /* 25 bilder per sekund */		
 	}

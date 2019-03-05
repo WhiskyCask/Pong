@@ -4,6 +4,7 @@
  */
 
 #include "graphicdisplay.h"
+#include <stdbool.h>
 
 enum {
 	
