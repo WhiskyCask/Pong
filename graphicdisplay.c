@@ -5,7 +5,7 @@
 
 #include "graphicdisplay.h"
 
-static const enum {
+enum {
 	
 	B_E = 64, /* Enable signal */
 	B_RESET = 32, /* Reset signal */
@@ -17,7 +17,7 @@ static const enum {
 	
 };
 
-static const enum {
+enum {
 	
 	LCD_ON = 0x3F,
 	LCD_OFF = 0x3E,
@@ -170,7 +170,7 @@ static uint8_t graphic_read_data(uint8_t controller)
 	return graphic_read(controller); /* Returnerar korrekt data */
 }
 
-void graphic_clear_screen()
+void graphic_clear_screen(void)
 {
 	for (uint8_t page = 0; page < LCD_PAGES; page++) {
 		
@@ -189,7 +189,7 @@ void graphic_clear_screen()
 	}
 }
 
-void graphic_initialise()
+void graphic_initialise(void)
 {
 	graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
 	delay_mikro(10);
@@ -221,17 +221,8 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 	
 	uint8_t mask;
 	uint8_t bitIndex = (((y)+8) % 8);
-	switch(bitIndex){
-		case 0: mask = 0b00000001; break;
-		case 1: mask = 0b00000010; break;
-		case 2: mask = 0b00000100; break;
-		case 3: mask = 0b00001000; break;
-		case 4: mask = 0b00010000; break;
-		case 5: mask = 0b00100000; break;
-		case 6: mask = 0b01000000; break;
-		case 7: mask = 0b10000000; break;
-	}
 	
+	mask = 1 << bitIndex;
 	
 	//uint8_t mask = 1 << ((y - 1) & 7); /* & 7 är ekvivalnet med % 8 */ // Vad är detta? &?
 	if (!set) {
@@ -252,7 +243,7 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 	
 }
 
-void draw_buffer(){
+void draw_buffer(void){
 	
 	for(uint32_t i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
 		

@@ -18,9 +18,9 @@ typedef struct {
 	uint8_t changed[1024];
 }BBuffer, *pBBuffer;
 
-void graphic_initialise();
-void graphic_clear_screen();
+void graphic_initialise(void);
+void graphic_clear_screen(void);
 void pixel(uint8_t x, uint8_t y, uint8_t set);
-void draw_buffer();
+void draw_buffer(void);
 
 #endif

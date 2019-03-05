@@ -5,7 +5,7 @@
 
 #include "delay.h"
 
-static struct _STK {
+struct _STK {
 	
 	uint32_t CTRL;
 	uint32_t LOAD;
