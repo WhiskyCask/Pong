@@ -46,5 +46,6 @@ void move_object(Object * object);
 void set_object_vel(Object * object, int8_t vel_x, int8_t vel_y);
 
 Object create_ball(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y);
+Object create_paddle(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y);
 
 #endif

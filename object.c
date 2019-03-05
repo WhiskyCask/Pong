@@ -15,6 +15,18 @@ const Geometry geometry_ball = { 12, 4, 4, {
 	}
 };
 
+const Geometry geometry_paddle = { 12, 2, 8, {
+	{0,0}, {1,0},
+	{0,1}, {1,1},
+	{0,2}, {1,2},
+	{0,3}, {1,3},
+	{0,4}, {1,4},
+	{0,5}, {1,5},
+	{0,6}, {1,6},
+	{0,7}, {1,7}
+	}
+};
+
 
 void draw_object(Object * object)
 {
@@ -59,6 +71,18 @@ void set_object_vel(Object * object, int8_t vel_x, int8_t vel_y)
 Object create_ball(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y) {
 	return (Object) {
 	&geometry_ball,
+	pos_x, pos_y,
+	vel_x, vel_y,
+	draw_object,
+	clear_object,
+	move_object,
+	set_object_vel
+	};
+}
+
+Object create_paddle(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y) {
+	return (Object) {
+	&geometry_paddle,
 	pos_x, pos_y,
 	vel_x, vel_y,
 	draw_object,
