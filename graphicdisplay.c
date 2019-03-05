@@ -248,26 +248,33 @@ void pixel(uint8_t x, uint8_t y, uint8_t set)
 	}
 	
 	buffer.buf[8*add+page] = mask;
+	buffer.changed[8*add+page] = 0b11111111;
 	
 }
 
 void draw_buffer(){
 	
 	for(uint32_t i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
+		
 		uint8_t page = i%8;
 		uint8_t add = i/8;
 		
-		uint8_t controller;
-		if(add < LCD_WIDTH/2){
-			controller = B_CS1;
-		}else{
-			controller = B_CS2;
-			add = add - (LCD_WIDTH/2);
+		if(buffer.changed[8*add+page]){
+			uint8_t controller;
+			if(add < LCD_WIDTH/2){
+				controller = B_CS1;
+			}else{
+				controller = B_CS2;
+				add = add - (LCD_WIDTH/2);
+			}
+		
+			graphic_write_command(LCD_SET_PAGE | page, controller); /* Ordningen i vilken man ställer page och address verkar spela roll */
+			graphic_write_command(LCD_SET_ADD | add, controller);
+			graphic_write_data(buffer.buf[i], controller);
+			buffer.changed[8*add+page] = 0b00000000;
 		}
 		
-		graphic_write_command(LCD_SET_PAGE | page, controller); /* Ordningen i vilken man ställer page och address verkar spela roll */
-		graphic_write_command(LCD_SET_ADD | add, controller);
-		graphic_write_data(buffer.buf[i], controller);
+		
 	}
 
 

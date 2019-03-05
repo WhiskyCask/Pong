@@ -15,6 +15,7 @@ extern const uint8_t LCD_HEIGHT;
 
 typedef struct {
 	uint8_t buf[1024];
+	uint8_t changed[1024];
 }BBuffer, *pBBuffer;
 
 void graphic_initialise();

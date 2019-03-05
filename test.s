@@ -8,378 +8,564 @@
    8              		.eabi_attribute 30, 6
    9              		.eabi_attribute 34, 0
   10              		.eabi_attribute 18, 4
-  11              		.file	"startup.c"
+  11              		.file	"object.c"
   12              		.text
   13              	.Ltext0:
   14              		.cfi_sections	.debug_frame
-  15              		.section	.start_section,"ax",%progbits
-  16              		.align	1
-  17              		.global	startup
-  18              		.syntax unified
-  19              		.code	16
-  20              		.thumb_func
-  21              		.fpu softvfp
-  23              	startup:
-  24              	.LFB0:
-  25              		.file 1 "C:/Users/isake/Documents/Laboration5/Pong/startup.c"
-   1:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** /*
-   2:C:/Users/isake/Documents/Laboration5/Pong\startup.c ****  * 	startup.c
-   3:C:/Users/isake/Documents/Laboration5/Pong\startup.c ****  *
-   4:C:/Users/isake/Documents/Laboration5/Pong\startup.c ****  */
-   5:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 
-   6:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "intdef.h"
-   7:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "GPIO.h"
-   8:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "delay.h"
-   9:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "graphicdisplay.h"
-  10:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "asciidisplay.h"
-  11:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "keyboard.h"
-  12:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** #include "object.h"
-  13:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 
-  14:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** void startup(void) __attribute__((naked)) __attribute__((section (".start_section")) );
-  15:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 
-  16:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** void startup ( void )
-  17:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** {
-  26              		.loc 1 17 0
-  27              		.cfi_startproc
-  28              		@ Naked Function: prologue and epilogue provided by programmer.
-  29              		@ args = 0, pretend = 0, frame = 0
-  30              		@ frame_needed = 1, uses_anonymous_args = 0
-  18:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** asm volatile(
-  31              		.loc 1 18 0
-  32              		.syntax divided
-  33              	@ 18 "C:/Users/isake/Documents/Laboration5/Pong/startup.c" 1
-  34 0000 0248     		 LDR R0,=0x2001C000
-  35 0002 8546     	 MOV SP,R0
-  36 0004 FFF7FEFF 	 BL main
-  37 0008 FEE7     	.L1: B .L1
-  38              	
-  39              	@ 0 "" 2
-  19:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	" LDR R0,=0x2001C000\n"		/* set stack */
-  20:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	" MOV SP,R0\n"
-  21:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	" BL main\n"				/* call main */
-  22:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	".L1: B .L1\n"				/* never return */
-  23:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	) ;
-  24:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** }
-  40              		.loc 1 24 0
-  41              		.thumb
-  42              		.syntax unified
-  43 000a C046     		nop
-  44              		.cfi_endproc
-  45              	.LFE0:
-  47              		.text
-  48              		.align	1
-  49              		.global	init_app
-  50              		.syntax unified
-  51              		.code	16
-  52              		.thumb_func
-  53              		.fpu softvfp
-  55              	init_app:
-  56              	.LFB1:
-  25:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 
-  26:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** void init_app()
-  27:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** {
-  57              		.loc 1 27 0
-  58              		.cfi_startproc
-  59              		@ args = 0, pretend = 0, frame = 0
-  60              		@ frame_needed = 1, uses_anonymous_args = 0
-  61 0000 80B5     		push	{r7, lr}
-  62              		.cfi_def_cfa_offset 8
-  63              		.cfi_offset 7, -8
-  64              		.cfi_offset 14, -4
-  65 0002 00AF     		add	r7, sp, #0
-  66              		.cfi_def_cfa_register 7
-  28:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	GPIO_D->MODER = 0x55005500; /* Ansluter en keypad till PortD0-7 och en annan till PortD8-15 */
-  67              		.loc 1 28 0
-  68 0004 054B     		ldr	r3, .L3
-  69 0006 1B68     		ldr	r3, [r3]
-  70 0008 054A     		ldr	r2, .L3+4
-  71 000a 1A60     		str	r2, [r3]
-  29:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	GPIO_E->MODER = 0x55555555; /* Sätter hela Port E till utport */
-  72              		.loc 1 29 0
-  73 000c 054B     		ldr	r3, .L3+8
-  74 000e 1B68     		ldr	r3, [r3]
-  75 0010 054A     		ldr	r2, .L3+12
-  76 0012 1A60     		str	r2, [r3]
-  30:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** }
-  77              		.loc 1 30 0
-  78 0014 C046     		nop
-  79 0016 BD46     		mov	sp, r7
-  80              		@ sp needed
-  81 0018 80BD     		pop	{r7, pc}
-  82              	.L4:
-  83 001a C046     		.align	2
-  84              	.L3:
-  85 001c 00000000 		.word	GPIO_D
-  86 0020 00550055 		.word	1426085120
-  87 0024 00000000 		.word	GPIO_E
-  88 0028 55555555 		.word	1431655765
-  89              		.cfi_endproc
-  90              	.LFE1:
-  92              		.align	1
-  93              		.global	main
-  94              		.syntax unified
-  95              		.code	16
-  96              		.thumb_func
-  97              		.fpu softvfp
-  99              	main:
- 100              	.LFB2:
-  31:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 
-  32:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** int main(void)
-  33:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** {
- 101              		.loc 1 33 0
- 102              		.cfi_startproc
- 103              		@ args = 0, pretend = 0, frame = 32
- 104              		@ frame_needed = 1, uses_anonymous_args = 0
- 105 002c B0B5     		push	{r4, r5, r7, lr}
- 106              		.cfi_def_cfa_offset 16
- 107              		.cfi_offset 4, -16
- 108              		.cfi_offset 5, -12
- 109              		.cfi_offset 7, -8
- 110              		.cfi_offset 14, -4
- 111 002e 8AB0     		sub	sp, sp, #40
- 112              		.cfi_def_cfa_offset 56
- 113 0030 02AF     		add	r7, sp, #8
- 114              		.cfi_def_cfa 7, 48
-  34:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	init_app();
- 115              		.loc 1 34 0
- 116 0032 FFF7FEFF 		bl	init_app
-  35:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	ascii_initialise();
- 117              		.loc 1 35 0
- 118 0036 FFF7FEFF 		bl	ascii_initialise
-  36:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	graphic_initialise();
- 119              		.loc 1 36 0
- 120 003a FFF7FEFF 		bl	graphic_initialise
-  37:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	#ifndef SIMULATOR
-  38:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		graphic_clear_screen();
-  39:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	#endif
-  40:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	
-  41:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	Object ball = create_ball(10, 10, 0, 0);
- 121              		.loc 1 41 0
- 122 003e 381D     		adds	r0, r7, #4
- 123 0040 0023     		movs	r3, #0
- 124 0042 0093     		str	r3, [sp]
- 125 0044 0023     		movs	r3, #0
- 126 0046 0A22     		movs	r2, #10
- 127 0048 0A21     		movs	r1, #10
- 128 004a FFF7FEFF 		bl	create_ball
- 129              	.L18:
-  42:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	uint8_t k;
-  43:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 	while(1) {
-  44:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		k = keyb();
- 130              		.loc 1 44 0
- 131 004e 1F25     		movs	r5, #31
- 132 0050 7C19     		adds	r4, r7, r5
- 133 0052 FFF7FEFF 		bl	keyb
- 134 0056 0300     		movs	r3, r0
- 135 0058 2370     		strb	r3, [r4]
-  45:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		switch(k) {
- 136              		.loc 1 45 0
- 137 005a 7B19     		adds	r3, r7, r5
- 138 005c 1B78     		ldrb	r3, [r3]
- 139 005e 092B     		cmp	r3, #9
- 140 0060 4AD8     		bhi	.L6
- 141 0062 9A00     		lsls	r2, r3, #2
- 142 0064 2D4B     		ldr	r3, .L19
- 143 0066 D318     		adds	r3, r2, r3
- 144 0068 1B68     		ldr	r3, [r3]
- 145 006a 9F46     		mov	pc, r3
- 146              		.section	.rodata
- 147              		.align	2
- 148              	.L8:
- 149 0000 F8000000 		.word	.L6
- 150 0004 6C000000 		.word	.L7
- 151 0008 80000000 		.word	.L9
- 152 000c 90000000 		.word	.L10
- 153 0010 A0000000 		.word	.L11
- 154 0014 B0000000 		.word	.L12
- 155 0018 BE000000 		.word	.L13
- 156 001c CC000000 		.word	.L14
- 157 0020 DC000000 		.word	.L15
- 158 0024 EA000000 		.word	.L16
- 159              		.text
- 160              	.L7:
-  46:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			
-  47:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 1:
-  48:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, -2, -2);
- 161              		.loc 1 48 0
- 162 006c 3B1D     		adds	r3, r7, #4
- 163 006e 5B69     		ldr	r3, [r3, #20]
- 164 0070 0222     		movs	r2, #2
- 165 0072 5442     		rsbs	r4, r2, #0
- 166 0074 0222     		movs	r2, #2
- 167 0076 5142     		rsbs	r1, r2, #0
- 168 0078 381D     		adds	r0, r7, #4
- 169 007a 2200     		movs	r2, r4
- 170 007c 9847     		blx	r3
- 171              	.LVL0:
-  49:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 172              		.loc 1 49 0
- 173 007e 41E0     		b	.L17
- 174              	.L9:
-  50:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			
-  51:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 2:
-  52:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 0, -4);
- 175              		.loc 1 52 0
- 176 0080 3B1D     		adds	r3, r7, #4
- 177 0082 5B69     		ldr	r3, [r3, #20]
- 178 0084 0422     		movs	r2, #4
- 179 0086 5242     		rsbs	r2, r2, #0
- 180 0088 381D     		adds	r0, r7, #4
- 181 008a 0021     		movs	r1, #0
- 182 008c 9847     		blx	r3
- 183              	.LVL1:
-  53:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 184              		.loc 1 53 0
- 185 008e 39E0     		b	.L17
- 186              	.L10:
-  54:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  55:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 3:
-  56:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 2, -2);
- 187              		.loc 1 56 0
- 188 0090 3B1D     		adds	r3, r7, #4
- 189 0092 5B69     		ldr	r3, [r3, #20]
- 190 0094 0222     		movs	r2, #2
- 191 0096 5242     		rsbs	r2, r2, #0
- 192 0098 381D     		adds	r0, r7, #4
- 193 009a 0221     		movs	r1, #2
- 194 009c 9847     		blx	r3
- 195              	.LVL2:
-  57:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 196              		.loc 1 57 0
- 197 009e 31E0     		b	.L17
- 198              	.L11:
-  58:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  59:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 4:
-  60:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, -4, 0);
- 199              		.loc 1 60 0
- 200 00a0 3B1D     		adds	r3, r7, #4
- 201 00a2 5B69     		ldr	r3, [r3, #20]
- 202 00a4 0422     		movs	r2, #4
- 203 00a6 5142     		rsbs	r1, r2, #0
- 204 00a8 381D     		adds	r0, r7, #4
- 205 00aa 0022     		movs	r2, #0
- 206 00ac 9847     		blx	r3
- 207              	.LVL3:
-  61:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 208              		.loc 1 61 0
- 209 00ae 29E0     		b	.L17
- 210              	.L12:
-  62:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  63:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 5:
-  64:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 0, 0);
- 211              		.loc 1 64 0
- 212 00b0 3B1D     		adds	r3, r7, #4
- 213 00b2 5B69     		ldr	r3, [r3, #20]
- 214 00b4 381D     		adds	r0, r7, #4
- 215 00b6 0022     		movs	r2, #0
- 216 00b8 0021     		movs	r1, #0
- 217 00ba 9847     		blx	r3
- 218              	.LVL4:
-  65:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 219              		.loc 1 65 0
- 220 00bc 22E0     		b	.L17
- 221              	.L13:
-  66:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  67:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 6:
-  68:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 4, 0);
- 222              		.loc 1 68 0
- 223 00be 3B1D     		adds	r3, r7, #4
- 224 00c0 5B69     		ldr	r3, [r3, #20]
- 225 00c2 381D     		adds	r0, r7, #4
- 226 00c4 0022     		movs	r2, #0
- 227 00c6 0421     		movs	r1, #4
- 228 00c8 9847     		blx	r3
- 229              	.LVL5:
-  69:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 230              		.loc 1 69 0
- 231 00ca 1BE0     		b	.L17
- 232              	.L14:
-  70:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  71:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 7:
-  72:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, -2, 2);
- 233              		.loc 1 72 0
- 234 00cc 3B1D     		adds	r3, r7, #4
- 235 00ce 5B69     		ldr	r3, [r3, #20]
- 236 00d0 0222     		movs	r2, #2
- 237 00d2 5142     		rsbs	r1, r2, #0
- 238 00d4 381D     		adds	r0, r7, #4
- 239 00d6 0222     		movs	r2, #2
- 240 00d8 9847     		blx	r3
- 241              	.LVL6:
-  73:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 242              		.loc 1 73 0
- 243 00da 13E0     		b	.L17
- 244              	.L15:
-  74:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  75:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 8:
-  76:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 0, 4);
- 245              		.loc 1 76 0
- 246 00dc 3B1D     		adds	r3, r7, #4
- 247 00de 5B69     		ldr	r3, [r3, #20]
- 248 00e0 381D     		adds	r0, r7, #4
- 249 00e2 0422     		movs	r2, #4
- 250 00e4 0021     		movs	r1, #0
- 251 00e6 9847     		blx	r3
- 252              	.LVL7:
-  77:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 253              		.loc 1 77 0
- 254 00e8 0CE0     		b	.L17
- 255              	.L16:
-  78:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				
-  79:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			case 9:
-  80:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 2, 2);
- 256              		.loc 1 80 0
- 257 00ea 3B1D     		adds	r3, r7, #4
- 258 00ec 5B69     		ldr	r3, [r3, #20]
- 259 00ee 381D     		adds	r0, r7, #4
- 260 00f0 0222     		movs	r2, #2
- 261 00f2 0221     		movs	r1, #2
- 262 00f4 9847     		blx	r3
- 263              	.LVL8:
-  81:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				break;
- 264              		.loc 1 81 0
- 265 00f6 05E0     		b	.L17
- 266              	.L6:
-  82:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			
-  83:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 			default:
-  84:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				/* Om ingen knapp är nedtryckt, nollställ hastigheten */
-  85:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 				ball.set_vel(&ball, 0, 0);
- 267              		.loc 1 85 0
- 268 00f8 3B1D     		adds	r3, r7, #4
- 269 00fa 5B69     		ldr	r3, [r3, #20]
- 270 00fc 381D     		adds	r0, r7, #4
- 271 00fe 0022     		movs	r2, #0
- 272 0100 0021     		movs	r1, #0
- 273 0102 9847     		blx	r3
- 274              	.LVL9:
- 275              	.L17:
-  86:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		}
-  87:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		ball.move(&ball);
- 276              		.loc 1 87 0
- 277 0104 3B1D     		adds	r3, r7, #4
- 278 0106 1B69     		ldr	r3, [r3, #16]
- 279 0108 3A1D     		adds	r2, r7, #4
- 280 010a 1000     		movs	r0, r2
- 281 010c 9847     		blx	r3
- 282              	.LVL10:
-  88:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		draw_buffer();
- 283              		.loc 1 88 0
- 284 010e FFF7FEFF 		bl	draw_buffer
-  89:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		delay_milli(40); /* 25 bilder per sekund */		
- 285              		.loc 1 89 0
- 286 0112 2820     		movs	r0, #40
- 287 0114 FFF7FEFF 		bl	delay_milli
-  44:C:/Users/isake/Documents/Laboration5/Pong\startup.c **** 		switch(k) {
- 288              		.loc 1 44 0
- 289 0118 99E7     		b	.L18
- 290              	.L20:
- 291 011a C046     		.align	2
- 292              	.L19:
- 293 011c 00000000 		.word	.L8
- 294              		.cfi_endproc
- 295              	.LFE2:
- 297              	.Letext0:
- 298              		.file 2 "include/intdef.h"
- 299              		.file 3 "include/GPIO.h"
- 300              		.file 4 "include/graphicdisplay.h"
- 301              		.file 5 "include/object.h"
+  15              		.global	geometry_ball
+  16              		.section	.rodata
+  17              		.align	2
+  20              	geometry_ball:
+  21 0000 0C       		.byte	12
+  22 0001 04       		.byte	4
+  23 0002 04       		.byte	4
+  24 0003 00       		.byte	0
+  25 0004 01       		.byte	1
+  26 0005 00       		.byte	0
+  27 0006 02       		.byte	2
+  28 0007 01       		.byte	1
+  29 0008 00       		.byte	0
+  30 0009 01       		.byte	1
+  31 000a 01       		.byte	1
+  32 000b 01       		.byte	1
+  33 000c 02       		.byte	2
+  34 000d 01       		.byte	1
+  35 000e 03       		.byte	3
+  36 000f 02       		.byte	2
+  37 0010 00       		.byte	0
+  38 0011 02       		.byte	2
+  39 0012 01       		.byte	1
+  40 0013 02       		.byte	2
+  41 0014 02       		.byte	2
+  42 0015 02       		.byte	2
+  43 0016 03       		.byte	3
+  44 0017 03       		.byte	3
+  45 0018 01       		.byte	1
+  46 0019 03       		.byte	3
+  47 001a 02       		.byte	2
+  48 001b 00000000 		.space	16
+  48      00000000 
+  48      00000000 
+  48      00000000 
+  49              		.text
+  50              		.align	1
+  51              		.global	draw_object
+  52              		.syntax unified
+  53              		.code	16
+  54              		.thumb_func
+  55              		.fpu softvfp
+  57              	draw_object:
+  58              	.LFB0:
+  59              		.file 1 "C:/Users/isake/Documents/Laboration5/Pong/object.c"
+   1:C:/Users/isake/Documents/Laboration5/Pong\object.c **** /*
+   2:C:/Users/isake/Documents/Laboration5/Pong\object.c ****  * 
+   3:C:/Users/isake/Documents/Laboration5/Pong\object.c ****  * 	object.c
+   4:C:/Users/isake/Documents/Laboration5/Pong\object.c ****  *
+   5:C:/Users/isake/Documents/Laboration5/Pong\object.c ****  */
+   6:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+   7:C:/Users/isake/Documents/Laboration5/Pong\object.c **** #include "object.h"
+   8:C:/Users/isake/Documents/Laboration5/Pong\object.c **** #include "graphicdisplay.h"
+   9:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  10:C:/Users/isake/Documents/Laboration5/Pong\object.c **** const Geometry geometry_ball = { 12, 4, 4, {
+  11:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 			{0, 1}, {0, 2}, 
+  12:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	{1, 0}, {1, 1}, {1, 2}, {1, 3},
+  13:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	{2, 0}, {2, 1}, {2, 2}, {2, 3},
+  14:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 			{3, 1}, {3, 2}
+  15:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
+  16:C:/Users/isake/Documents/Laboration5/Pong\object.c **** };
+  17:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  18:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  19:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void draw_object(Object * object)
+  20:C:/Users/isake/Documents/Laboration5/Pong\object.c **** {
+  60              		.loc 1 20 0
+  61              		.cfi_startproc
+  62              		@ args = 0, pretend = 0, frame = 16
+  63              		@ frame_needed = 1, uses_anonymous_args = 0
+  64 0000 90B5     		push	{r4, r7, lr}
+  65              		.cfi_def_cfa_offset 12
+  66              		.cfi_offset 4, -12
+  67              		.cfi_offset 7, -8
+  68              		.cfi_offset 14, -4
+  69 0002 85B0     		sub	sp, sp, #20
+  70              		.cfi_def_cfa_offset 32
+  71 0004 00AF     		add	r7, sp, #0
+  72              		.cfi_def_cfa_register 7
+  73 0006 7860     		str	r0, [r7, #4]
+  74              	.LBB2:
+  21:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+  75              		.loc 1 21 0
+  76 0008 0F23     		movs	r3, #15
+  77 000a FB18     		adds	r3, r7, r3
+  78 000c 0022     		movs	r2, #0
+  79 000e 1A70     		strb	r2, [r3]
+  80 0010 27E0     		b	.L2
+  81              	.L3:
+  22:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 		pixel(object->geometry->points[i].x + object->pos_x, object->geometry->points[i].y + object->pos_
+  82              		.loc 1 22 0 discriminator 3
+  83 0012 7B68     		ldr	r3, [r7, #4]
+  84 0014 1A68     		ldr	r2, [r3]
+  85 0016 0F21     		movs	r1, #15
+  86 0018 7B18     		adds	r3, r7, r1
+  87 001a 1B78     		ldrb	r3, [r3]
+  88 001c 5B00     		lsls	r3, r3, #1
+  89 001e D318     		adds	r3, r2, r3
+  90 0020 0333     		adds	r3, r3, #3
+  91 0022 1A78     		ldrb	r2, [r3]
+  92 0024 7B68     		ldr	r3, [r7, #4]
+  93 0026 1B79     		ldrb	r3, [r3, #4]
+  94 0028 5BB2     		sxtb	r3, r3
+  95 002a DBB2     		uxtb	r3, r3
+  96 002c D318     		adds	r3, r2, r3
+  97 002e D8B2     		uxtb	r0, r3
+  98 0030 7B68     		ldr	r3, [r7, #4]
+  99 0032 1A68     		ldr	r2, [r3]
+ 100 0034 0C00     		movs	r4, r1
+ 101 0036 7B18     		adds	r3, r7, r1
+ 102 0038 1B78     		ldrb	r3, [r3]
+ 103 003a 5B00     		lsls	r3, r3, #1
+ 104 003c D318     		adds	r3, r2, r3
+ 105 003e 0433     		adds	r3, r3, #4
+ 106 0040 1A78     		ldrb	r2, [r3]
+ 107 0042 7B68     		ldr	r3, [r7, #4]
+ 108 0044 5B79     		ldrb	r3, [r3, #5]
+ 109 0046 5BB2     		sxtb	r3, r3
+ 110 0048 DBB2     		uxtb	r3, r3
+ 111 004a D318     		adds	r3, r2, r3
+ 112 004c DBB2     		uxtb	r3, r3
+ 113 004e 0122     		movs	r2, #1
+ 114 0050 1900     		movs	r1, r3
+ 115 0052 FFF7FEFF 		bl	pixel
+  21:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 116              		.loc 1 21 0 discriminator 3
+ 117 0056 2100     		movs	r1, r4
+ 118 0058 7B18     		adds	r3, r7, r1
+ 119 005a 1A78     		ldrb	r2, [r3]
+ 120 005c 7B18     		adds	r3, r7, r1
+ 121 005e 0132     		adds	r2, r2, #1
+ 122 0060 1A70     		strb	r2, [r3]
+ 123              	.L2:
+  21:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 124              		.loc 1 21 0 is_stmt 0 discriminator 1
+ 125 0062 7B68     		ldr	r3, [r7, #4]
+ 126 0064 1B68     		ldr	r3, [r3]
+ 127 0066 1B78     		ldrb	r3, [r3]
+ 128 0068 0F22     		movs	r2, #15
+ 129 006a BA18     		adds	r2, r7, r2
+ 130 006c 1278     		ldrb	r2, [r2]
+ 131 006e 9A42     		cmp	r2, r3
+ 132 0070 CFD3     		bcc	.L3
+ 133              	.LBE2:
+  23:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
+  24:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
+ 134              		.loc 1 24 0 is_stmt 1
+ 135 0072 C046     		nop
+ 136 0074 BD46     		mov	sp, r7
+ 137 0076 05B0     		add	sp, sp, #20
+ 138              		@ sp needed
+ 139 0078 90BD     		pop	{r4, r7, pc}
+ 140              		.cfi_endproc
+ 141              	.LFE0:
+ 143              		.align	1
+ 144              		.global	clear_object
+ 145              		.syntax unified
+ 146              		.code	16
+ 147              		.thumb_func
+ 148              		.fpu softvfp
+ 150              	clear_object:
+ 151              	.LFB1:
+  25:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  26:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void clear_object(Object * object)
+  27:C:/Users/isake/Documents/Laboration5/Pong\object.c **** {
+ 152              		.loc 1 27 0
+ 153              		.cfi_startproc
+ 154              		@ args = 0, pretend = 0, frame = 16
+ 155              		@ frame_needed = 1, uses_anonymous_args = 0
+ 156 007a 90B5     		push	{r4, r7, lr}
+ 157              		.cfi_def_cfa_offset 12
+ 158              		.cfi_offset 4, -12
+ 159              		.cfi_offset 7, -8
+ 160              		.cfi_offset 14, -4
+ 161 007c 85B0     		sub	sp, sp, #20
+ 162              		.cfi_def_cfa_offset 32
+ 163 007e 00AF     		add	r7, sp, #0
+ 164              		.cfi_def_cfa_register 7
+ 165 0080 7860     		str	r0, [r7, #4]
+ 166              	.LBB3:
+  28:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 167              		.loc 1 28 0
+ 168 0082 0F23     		movs	r3, #15
+ 169 0084 FB18     		adds	r3, r7, r3
+ 170 0086 0022     		movs	r2, #0
+ 171 0088 1A70     		strb	r2, [r3]
+ 172 008a 27E0     		b	.L5
+ 173              	.L6:
+  29:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 		pixel(object->geometry->points[i].x + object->pos_x, object->geometry->points[i].y + object->pos_
+ 174              		.loc 1 29 0 discriminator 3
+ 175 008c 7B68     		ldr	r3, [r7, #4]
+ 176 008e 1A68     		ldr	r2, [r3]
+ 177 0090 0F21     		movs	r1, #15
+ 178 0092 7B18     		adds	r3, r7, r1
+ 179 0094 1B78     		ldrb	r3, [r3]
+ 180 0096 5B00     		lsls	r3, r3, #1
+ 181 0098 D318     		adds	r3, r2, r3
+ 182 009a 0333     		adds	r3, r3, #3
+ 183 009c 1A78     		ldrb	r2, [r3]
+ 184 009e 7B68     		ldr	r3, [r7, #4]
+ 185 00a0 1B79     		ldrb	r3, [r3, #4]
+ 186 00a2 5BB2     		sxtb	r3, r3
+ 187 00a4 DBB2     		uxtb	r3, r3
+ 188 00a6 D318     		adds	r3, r2, r3
+ 189 00a8 D8B2     		uxtb	r0, r3
+ 190 00aa 7B68     		ldr	r3, [r7, #4]
+ 191 00ac 1A68     		ldr	r2, [r3]
+ 192 00ae 0C00     		movs	r4, r1
+ 193 00b0 7B18     		adds	r3, r7, r1
+ 194 00b2 1B78     		ldrb	r3, [r3]
+ 195 00b4 5B00     		lsls	r3, r3, #1
+ 196 00b6 D318     		adds	r3, r2, r3
+ 197 00b8 0433     		adds	r3, r3, #4
+ 198 00ba 1A78     		ldrb	r2, [r3]
+ 199 00bc 7B68     		ldr	r3, [r7, #4]
+ 200 00be 5B79     		ldrb	r3, [r3, #5]
+ 201 00c0 5BB2     		sxtb	r3, r3
+ 202 00c2 DBB2     		uxtb	r3, r3
+ 203 00c4 D318     		adds	r3, r2, r3
+ 204 00c6 DBB2     		uxtb	r3, r3
+ 205 00c8 0022     		movs	r2, #0
+ 206 00ca 1900     		movs	r1, r3
+ 207 00cc FFF7FEFF 		bl	pixel
+  28:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 208              		.loc 1 28 0 discriminator 3
+ 209 00d0 2100     		movs	r1, r4
+ 210 00d2 7B18     		adds	r3, r7, r1
+ 211 00d4 1A78     		ldrb	r2, [r3]
+ 212 00d6 7B18     		adds	r3, r7, r1
+ 213 00d8 0132     		adds	r2, r2, #1
+ 214 00da 1A70     		strb	r2, [r3]
+ 215              	.L5:
+  28:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 216              		.loc 1 28 0 is_stmt 0 discriminator 1
+ 217 00dc 7B68     		ldr	r3, [r7, #4]
+ 218 00de 1B68     		ldr	r3, [r3]
+ 219 00e0 1B78     		ldrb	r3, [r3]
+ 220 00e2 0F22     		movs	r2, #15
+ 221 00e4 BA18     		adds	r2, r7, r2
+ 222 00e6 1278     		ldrb	r2, [r2]
+ 223 00e8 9A42     		cmp	r2, r3
+ 224 00ea CFD3     		bcc	.L6
+ 225              	.LBE3:
+  30:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
+  31:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
+ 226              		.loc 1 31 0 is_stmt 1
+ 227 00ec C046     		nop
+ 228 00ee BD46     		mov	sp, r7
+ 229 00f0 05B0     		add	sp, sp, #20
+ 230              		@ sp needed
+ 231 00f2 90BD     		pop	{r4, r7, pc}
+ 232              		.cfi_endproc
+ 233              	.LFE1:
+ 235              		.align	1
+ 236              		.global	move_object
+ 237              		.syntax unified
+ 238              		.code	16
+ 239              		.thumb_func
+ 240              		.fpu softvfp
+ 242              	move_object:
+ 243              	.LFB2:
+  32:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  33:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void move_object(Object * object) {
+ 244              		.loc 1 33 0
+ 245              		.cfi_startproc
+ 246              		@ args = 0, pretend = 0, frame = 8
+ 247              		@ frame_needed = 1, uses_anonymous_args = 0
+ 248 00f4 80B5     		push	{r7, lr}
+ 249              		.cfi_def_cfa_offset 8
+ 250              		.cfi_offset 7, -8
+ 251              		.cfi_offset 14, -4
+ 252 00f6 82B0     		sub	sp, sp, #8
+ 253              		.cfi_def_cfa_offset 16
+ 254 00f8 00AF     		add	r7, sp, #0
+ 255              		.cfi_def_cfa_register 7
+ 256 00fa 7860     		str	r0, [r7, #4]
+  34:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
+  35:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	clear_object(object);
+ 257              		.loc 1 35 0
+ 258 00fc 7B68     		ldr	r3, [r7, #4]
+ 259 00fe 1800     		movs	r0, r3
+ 260 0100 FFF7FEFF 		bl	clear_object
+  36:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
+  37:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	object->pos_x += object->vel_x;
+ 261              		.loc 1 37 0
+ 262 0104 7B68     		ldr	r3, [r7, #4]
+ 263 0106 1B79     		ldrb	r3, [r3, #4]
+ 264 0108 5BB2     		sxtb	r3, r3
+ 265 010a DAB2     		uxtb	r2, r3
+ 266 010c 7B68     		ldr	r3, [r7, #4]
+ 267 010e 9B79     		ldrb	r3, [r3, #6]
+ 268 0110 5BB2     		sxtb	r3, r3
+ 269 0112 DBB2     		uxtb	r3, r3
+ 270 0114 D318     		adds	r3, r2, r3
+ 271 0116 DBB2     		uxtb	r3, r3
+ 272 0118 5AB2     		sxtb	r2, r3
+ 273 011a 7B68     		ldr	r3, [r7, #4]
+ 274 011c 1A71     		strb	r2, [r3, #4]
+  38:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	object->pos_y += object->vel_y;
+ 275              		.loc 1 38 0
+ 276 011e 7B68     		ldr	r3, [r7, #4]
+ 277 0120 5B79     		ldrb	r3, [r3, #5]
+ 278 0122 5BB2     		sxtb	r3, r3
+ 279 0124 DAB2     		uxtb	r2, r3
+ 280 0126 7B68     		ldr	r3, [r7, #4]
+ 281 0128 DB79     		ldrb	r3, [r3, #7]
+ 282 012a 5BB2     		sxtb	r3, r3
+ 283 012c DBB2     		uxtb	r3, r3
+ 284 012e D318     		adds	r3, r2, r3
+ 285 0130 DBB2     		uxtb	r3, r3
+ 286 0132 5AB2     		sxtb	r2, r3
+ 287 0134 7B68     		ldr	r3, [r7, #4]
+ 288 0136 5A71     		strb	r2, [r3, #5]
+  39:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
+  40:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	/* Om objektet i fråga är påväg över någon kant, skifta riktning */
+  41:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	if (!(0 <= object->pos_x && object->pos_x + object->geometry->width < LCD_WIDTH)) {
+ 289              		.loc 1 41 0
+ 290 0138 7B68     		ldr	r3, [r7, #4]
+ 291 013a 1B79     		ldrb	r3, [r3, #4]
+ 292 013c 5BB2     		sxtb	r3, r3
+ 293 013e 002B     		cmp	r3, #0
+ 294 0140 0BDB     		blt	.L8
+ 295              		.loc 1 41 0 is_stmt 0 discriminator 1
+ 296 0142 7B68     		ldr	r3, [r7, #4]
+ 297 0144 1B79     		ldrb	r3, [r3, #4]
+ 298 0146 5BB2     		sxtb	r3, r3
+ 299 0148 1A00     		movs	r2, r3
+ 300 014a 7B68     		ldr	r3, [r7, #4]
+ 301 014c 1B68     		ldr	r3, [r3]
+ 302 014e 5B78     		ldrb	r3, [r3, #1]
+ 303 0150 D318     		adds	r3, r2, r3
+ 304 0152 174A     		ldr	r2, .L12
+ 305 0154 1278     		ldrb	r2, [r2]
+ 306 0156 9342     		cmp	r3, r2
+ 307 0158 08DB     		blt	.L9
+ 308              	.L8:
+  42:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 		object->vel_x *= -1;
+ 309              		.loc 1 42 0 is_stmt 1
+ 310 015a 7B68     		ldr	r3, [r7, #4]
+ 311 015c 9B79     		ldrb	r3, [r3, #6]
+ 312 015e 5BB2     		sxtb	r3, r3
+ 313 0160 DBB2     		uxtb	r3, r3
+ 314 0162 5B42     		rsbs	r3, r3, #0
+ 315 0164 DBB2     		uxtb	r3, r3
+ 316 0166 5AB2     		sxtb	r2, r3
+ 317 0168 7B68     		ldr	r3, [r7, #4]
+ 318 016a 9A71     		strb	r2, [r3, #6]
+ 319              	.L9:
+  43:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
+  44:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
+  45:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {
+ 320              		.loc 1 45 0
+ 321 016c 7B68     		ldr	r3, [r7, #4]
+ 322 016e 5B79     		ldrb	r3, [r3, #5]
+ 323 0170 5BB2     		sxtb	r3, r3
+ 324 0172 002B     		cmp	r3, #0
+ 325 0174 0BDB     		blt	.L10
+ 326              		.loc 1 45 0 is_stmt 0 discriminator 1
+ 327 0176 7B68     		ldr	r3, [r7, #4]
+ 328 0178 5B79     		ldrb	r3, [r3, #5]
+ 329 017a 5BB2     		sxtb	r3, r3
+ 330 017c 1A00     		movs	r2, r3
+ 331 017e 7B68     		ldr	r3, [r7, #4]
+ 332 0180 1B68     		ldr	r3, [r3]
+ 333 0182 9B78     		ldrb	r3, [r3, #2]
+ 334 0184 D318     		adds	r3, r2, r3
+ 335 0186 0B4A     		ldr	r2, .L12+4
+ 336 0188 1278     		ldrb	r2, [r2]
+ 337 018a 9342     		cmp	r3, r2
+ 338 018c 08DB     		blt	.L11
+ 339              	.L10:
+  46:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 		object->vel_y *= -1;
+ 340              		.loc 1 46 0 is_stmt 1
+ 341 018e 7B68     		ldr	r3, [r7, #4]
+ 342 0190 DB79     		ldrb	r3, [r3, #7]
+ 343 0192 5BB2     		sxtb	r3, r3
+ 344 0194 DBB2     		uxtb	r3, r3
+ 345 0196 5B42     		rsbs	r3, r3, #0
+ 346 0198 DBB2     		uxtb	r3, r3
+ 347 019a 5AB2     		sxtb	r2, r3
+ 348 019c 7B68     		ldr	r3, [r7, #4]
+ 349 019e DA71     		strb	r2, [r3, #7]
+ 350              	.L11:
+  47:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
+  48:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
+  49:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	draw_object(object);
+ 351              		.loc 1 49 0
+ 352 01a0 7B68     		ldr	r3, [r7, #4]
+ 353 01a2 1800     		movs	r0, r3
+ 354 01a4 FFF7FEFF 		bl	draw_object
+  50:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
+  51:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
+ 355              		.loc 1 51 0
+ 356 01a8 C046     		nop
+ 357 01aa BD46     		mov	sp, r7
+ 358 01ac 02B0     		add	sp, sp, #8
+ 359              		@ sp needed
+ 360 01ae 80BD     		pop	{r7, pc}
+ 361              	.L13:
+ 362              		.align	2
+ 363              	.L12:
+ 364 01b0 00000000 		.word	LCD_WIDTH
+ 365 01b4 00000000 		.word	LCD_HEIGHT
+ 366              		.cfi_endproc
+ 367              	.LFE2:
+ 369              		.align	1
+ 370              		.global	set_object_vel
+ 371              		.syntax unified
+ 372              		.code	16
+ 373              		.thumb_func
+ 374              		.fpu softvfp
+ 376              	set_object_vel:
+ 377              	.LFB3:
+  52:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  53:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void set_object_vel(Object * object, int8_t vel_x, int8_t vel_y)
+  54:C:/Users/isake/Documents/Laboration5/Pong\object.c **** {
+ 378              		.loc 1 54 0
+ 379              		.cfi_startproc
+ 380              		@ args = 0, pretend = 0, frame = 8
+ 381              		@ frame_needed = 1, uses_anonymous_args = 0
+ 382 01b8 80B5     		push	{r7, lr}
+ 383              		.cfi_def_cfa_offset 8
+ 384              		.cfi_offset 7, -8
+ 385              		.cfi_offset 14, -4
+ 386 01ba 82B0     		sub	sp, sp, #8
+ 387              		.cfi_def_cfa_offset 16
+ 388 01bc 00AF     		add	r7, sp, #0
+ 389              		.cfi_def_cfa_register 7
+ 390 01be 7860     		str	r0, [r7, #4]
+ 391 01c0 0800     		movs	r0, r1
+ 392 01c2 1100     		movs	r1, r2
+ 393 01c4 FB1C     		adds	r3, r7, #3
+ 394 01c6 021C     		adds	r2, r0, #0
+ 395 01c8 1A70     		strb	r2, [r3]
+ 396 01ca BB1C     		adds	r3, r7, #2
+ 397 01cc 0A1C     		adds	r2, r1, #0
+ 398 01ce 1A70     		strb	r2, [r3]
+  55:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	object->vel_x = vel_x;
+ 399              		.loc 1 55 0
+ 400 01d0 7B68     		ldr	r3, [r7, #4]
+ 401 01d2 FA1C     		adds	r2, r7, #3
+ 402 01d4 1278     		ldrb	r2, [r2]
+ 403 01d6 9A71     		strb	r2, [r3, #6]
+  56:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	object->vel_y = vel_y;
+ 404              		.loc 1 56 0
+ 405 01d8 7B68     		ldr	r3, [r7, #4]
+ 406 01da BA1C     		adds	r2, r7, #2
+ 407 01dc 1278     		ldrb	r2, [r2]
+ 408 01de DA71     		strb	r2, [r3, #7]
+  57:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
+ 409              		.loc 1 57 0
+ 410 01e0 C046     		nop
+ 411 01e2 BD46     		mov	sp, r7
+ 412 01e4 02B0     		add	sp, sp, #8
+ 413              		@ sp needed
+ 414 01e6 80BD     		pop	{r7, pc}
+ 415              		.cfi_endproc
+ 416              	.LFE3:
+ 418              		.align	1
+ 419              		.global	create_ball
+ 420              		.syntax unified
+ 421              		.code	16
+ 422              		.thumb_func
+ 423              		.fpu softvfp
+ 425              	create_ball:
+ 426              	.LFB4:
+  58:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
+  59:C:/Users/isake/Documents/Laboration5/Pong\object.c **** Object create_ball(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y) {
+ 427              		.loc 1 59 0
+ 428              		.cfi_startproc
+ 429              		@ args = 4, pretend = 0, frame = 8
+ 430              		@ frame_needed = 1, uses_anonymous_args = 0
+ 431 01e8 90B5     		push	{r4, r7, lr}
+ 432              		.cfi_def_cfa_offset 12
+ 433              		.cfi_offset 4, -12
+ 434              		.cfi_offset 7, -8
+ 435              		.cfi_offset 14, -4
+ 436 01ea 83B0     		sub	sp, sp, #12
+ 437              		.cfi_def_cfa_offset 24
+ 438 01ec 00AF     		add	r7, sp, #0
+ 439              		.cfi_def_cfa_register 7
+ 440 01ee 7860     		str	r0, [r7, #4]
+ 441 01f0 0C00     		movs	r4, r1
+ 442 01f2 1000     		movs	r0, r2
+ 443 01f4 1900     		movs	r1, r3
+ 444 01f6 FB1C     		adds	r3, r7, #3
+ 445 01f8 221C     		adds	r2, r4, #0
+ 446 01fa 1A70     		strb	r2, [r3]
+ 447 01fc BB1C     		adds	r3, r7, #2
+ 448 01fe 021C     		adds	r2, r0, #0
+ 449 0200 1A70     		strb	r2, [r3]
+ 450 0202 7B1C     		adds	r3, r7, #1
+ 451 0204 0A1C     		adds	r2, r1, #0
+ 452 0206 1A70     		strb	r2, [r3]
+  60:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	return (Object) {
+ 453              		.loc 1 60 0
+ 454 0208 7B68     		ldr	r3, [r7, #4]
+ 455 020a 114A     		ldr	r2, .L17
+ 456 020c 1A60     		str	r2, [r3]
+ 457 020e 7B68     		ldr	r3, [r7, #4]
+ 458 0210 FA1C     		adds	r2, r7, #3
+ 459 0212 1278     		ldrb	r2, [r2]
+ 460 0214 1A71     		strb	r2, [r3, #4]
+ 461 0216 7B68     		ldr	r3, [r7, #4]
+ 462 0218 BA1C     		adds	r2, r7, #2
+ 463 021a 1278     		ldrb	r2, [r2]
+ 464 021c 5A71     		strb	r2, [r3, #5]
+ 465 021e 7B68     		ldr	r3, [r7, #4]
+ 466 0220 7A1C     		adds	r2, r7, #1
+ 467 0222 1278     		ldrb	r2, [r2]
+ 468 0224 9A71     		strb	r2, [r3, #6]
+ 469 0226 7B68     		ldr	r3, [r7, #4]
+ 470 0228 1822     		movs	r2, #24
+ 471 022a BA18     		adds	r2, r7, r2
+ 472 022c 1278     		ldrb	r2, [r2]
+ 473 022e DA71     		strb	r2, [r3, #7]
+ 474 0230 7B68     		ldr	r3, [r7, #4]
+ 475 0232 084A     		ldr	r2, .L17+4
+ 476 0234 9A60     		str	r2, [r3, #8]
+ 477 0236 7B68     		ldr	r3, [r7, #4]
+ 478 0238 074A     		ldr	r2, .L17+8
+ 479 023a DA60     		str	r2, [r3, #12]
+ 480 023c 7B68     		ldr	r3, [r7, #4]
+ 481 023e 074A     		ldr	r2, .L17+12
+ 482 0240 1A61     		str	r2, [r3, #16]
+ 483 0242 7B68     		ldr	r3, [r7, #4]
+ 484 0244 064A     		ldr	r2, .L17+16
+ 485 0246 5A61     		str	r2, [r3, #20]
+  61:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	&geometry_ball,
+  62:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	pos_x, pos_y,
+  63:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	vel_x, vel_y,
+  64:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	draw_object,
+  65:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	clear_object,
+  66:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	move_object,
+  67:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	set_object_vel
+  68:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	};
+  69:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
+ 486              		.loc 1 69 0
+ 487 0248 7868     		ldr	r0, [r7, #4]
+ 488 024a BD46     		mov	sp, r7
+ 489 024c 03B0     		add	sp, sp, #12
+ 490              		@ sp needed
+ 491 024e 90BD     		pop	{r4, r7, pc}
+ 492              	.L18:
+ 493              		.align	2
+ 494              	.L17:
+ 495 0250 00000000 		.word	geometry_ball
+ 496 0254 00000000 		.word	draw_object
+ 497 0258 00000000 		.word	clear_object
+ 498 025c 00000000 		.word	move_object
+ 499 0260 00000000 		.word	set_object_vel
+ 500              		.cfi_endproc
+ 501              	.LFE4:
+ 503              	.Letext0:
+ 504              		.file 2 "include/intdef.h"
+ 505              		.file 3 "include/object.h"
+ 506              		.file 4 "include/GPIO.h"
+ 507              		.file 5 "include/graphicdisplay.h"
