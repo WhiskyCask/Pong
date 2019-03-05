@@ -28,7 +28,7 @@ typedef struct {
 
 typedef struct Object {
 	
-	Geometry * geometry;
+	const Geometry * geometry;
 	int8_t pos_x;
 	int8_t pos_y;
 	int8_t vel_x;
