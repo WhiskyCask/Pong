@@ -8,12 +8,13 @@
    8              		.eabi_attribute 30, 6
    9              		.eabi_attribute 34, 0
   10              		.eabi_attribute 18, 4
-  11              		.file	"object.c"
+  11              		.file	"graphicdisplay.c"
   12              		.text
   13              	.Ltext0:
   14              		.cfi_sections	.debug_frame
-  15              		.global	geometry_ball
+  15              		.global	LCD_PAGES
   16              		.section	.rodata
+<<<<<<< Updated upstream
   17              		.align	2
   20              	geometry_ball:
   21 0000 0C       		.byte	12
@@ -1412,4 +1413,1454 @@
  632              		.file 4 "include/GPIO.h"
  633              		.file 5 "include/delay.h"
  634              		.file 6 "include/graphicdisplay.h"
+>>>>>>> Stashed changes
+=======
+  19              	LCD_PAGES:
+  20 0000 08       		.byte	8
+  21              		.global	LCD_ADDS
+  24              	LCD_ADDS:
+  25 0001 40       		.byte	64
+  26              		.global	LCD_WIDTH
+  29              	LCD_WIDTH:
+  30 0002 80       		.byte	-128
+  31              		.global	LCD_HEIGHT
+  34              	LCD_HEIGHT:
+  35 0003 40       		.byte	64
+  36              		.bss
+  37              		.align	2
+  38              	buffer:
+  39 0000 00000000 		.space	2048
+  39      00000000 
+  39      00000000 
+  39      00000000 
+  39      00000000 
+  41              		.text
+  42              		.align	1
+  43              		.syntax unified
+  44              		.code	16
+  45              		.thumb_func
+  46              		.fpu softvfp
+  48              	graphic_ctrl_bit_set:
+  49              	.LFB0:
+  50              		.file 1 "/home/oscar/GitHub/Pong/graphicdisplay.c"
+   1:/home/oscar/GitHub/Pong/graphicdisplay.c **** /*
+   2:/home/oscar/GitHub/Pong/graphicdisplay.c ****  * 	display.h
+   3:/home/oscar/GitHub/Pong/graphicdisplay.c ****  *
+   4:/home/oscar/GitHub/Pong/graphicdisplay.c ****  */
+   5:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+   6:/home/oscar/GitHub/Pong/graphicdisplay.c **** #include "graphicdisplay.h"
+   7:/home/oscar/GitHub/Pong/graphicdisplay.c **** #include <stdbool.h>
+   8:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+   9:/home/oscar/GitHub/Pong/graphicdisplay.c **** enum {
+  10:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+  11:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_E = 64, /* Enable signal */
+  12:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_RESET = 32, /* Reset signal */
+  13:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_CS2 = 16, /* Välj högra grafiska displayen */
+  14:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_CS1 = 8, /* Välj vänstra grafiska displayen */
+  15:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_SELECT = 4, /* 0 = Grafisk display, 1 = ASCII-display */
+  16:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_RW = 2, /* 0 = Write, 1 = Read */
+  17:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	B_RS = 1 /* 0 = Control, 1 = Data */
+  18:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+  19:/home/oscar/GitHub/Pong/graphicdisplay.c **** };
+  20:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+  21:/home/oscar/GitHub/Pong/graphicdisplay.c **** enum {
+  22:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+  23:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	LCD_ON = 0x3F,
+  24:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	LCD_OFF = 0x3E,
+  25:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	LCD_SET_ADD = 0x40,
+  26:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	LCD_SET_PAGE = 0xB8,
+  27:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	LCD_DISPLAY_START = 0xC0,
+  28:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	LCD_BUSY = 0x80 /* Värdet som skall finnas i registret då displayen är upptagen */
+  29:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+  30:/home/oscar/GitHub/Pong/graphicdisplay.c **** };
+  31:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+  32:/home/oscar/GitHub/Pong/graphicdisplay.c **** const uint8_t LCD_PAGES = 8; /* Antalet pages, y-koordinater */
+  33:/home/oscar/GitHub/Pong/graphicdisplay.c **** const uint8_t LCD_ADDS = 64; /* Antalet addresses, x-koorinater */
+  34:/home/oscar/GitHub/Pong/graphicdisplay.c **** const uint8_t LCD_WIDTH = 128; /* Antalet pixlar på bredden */
+  35:/home/oscar/GitHub/Pong/graphicdisplay.c **** const uint8_t LCD_HEIGHT = 64; /* Antalet pixlar på höjden */	
+  36:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+  37:/home/oscar/GitHub/Pong/graphicdisplay.c **** static BBuffer buffer;
+  38:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+  39:/home/oscar/GitHub/Pong/graphicdisplay.c **** /* Adressera grafisk display och ettställ de bitar som är 1 i x */
+  40:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_ctrl_bit_set(uint8_t x)
+  41:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+  51              		.loc 1 41 0
+  52              		.cfi_startproc
+  53              		@ args = 0, pretend = 0, frame = 16
+  54              		@ frame_needed = 1, uses_anonymous_args = 0
+  55 0000 80B5     		push	{r7, lr}
+  56              		.cfi_def_cfa_offset 8
+  57              		.cfi_offset 7, -8
+  58              		.cfi_offset 14, -4
+  59 0002 84B0     		sub	sp, sp, #16
+  60              		.cfi_def_cfa_offset 24
+  61 0004 00AF     		add	r7, sp, #0
+  62              		.cfi_def_cfa_register 7
+  63 0006 0200     		movs	r2, r0
+  64 0008 FB1D     		adds	r3, r7, #7
+  65 000a 1A70     		strb	r2, [r3]
+  42:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t c = GPIO_E->ODR_LOW;
+  66              		.loc 1 42 0
+  67 000c 0D4B     		ldr	r3, .L2
+  68 000e 1A68     		ldr	r2, [r3]
+  69 0010 0F21     		movs	r1, #15
+  70 0012 7B18     		adds	r3, r7, r1
+  71 0014 127D     		ldrb	r2, [r2, #20]
+  72 0016 1A70     		strb	r2, [r3]
+  43:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	c |= (x & ~B_SELECT);
+  73              		.loc 1 43 0
+  74 0018 FB1D     		adds	r3, r7, #7
+  75 001a 1B78     		ldrb	r3, [r3]
+  76 001c 5BB2     		sxtb	r3, r3
+  77 001e 0422     		movs	r2, #4
+  78 0020 9343     		bics	r3, r2
+  79 0022 5AB2     		sxtb	r2, r3
+  80 0024 7B18     		adds	r3, r7, r1
+  81 0026 1B78     		ldrb	r3, [r3]
+  82 0028 5BB2     		sxtb	r3, r3
+  83 002a 1343     		orrs	r3, r2
+  84 002c 5AB2     		sxtb	r2, r3
+  85 002e 7B18     		adds	r3, r7, r1
+  86 0030 1A70     		strb	r2, [r3]
+  44:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->ODR_LOW = c;
+  87              		.loc 1 44 0
+  88 0032 044B     		ldr	r3, .L2
+  89 0034 1B68     		ldr	r3, [r3]
+  90 0036 7A18     		adds	r2, r7, r1
+  91 0038 1278     		ldrb	r2, [r2]
+  92 003a 1A75     		strb	r2, [r3, #20]
+  45:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+  93              		.loc 1 45 0
+  94 003c C046     		nop
+  95 003e BD46     		mov	sp, r7
+  96 0040 04B0     		add	sp, sp, #16
+  97              		@ sp needed
+  98 0042 80BD     		pop	{r7, pc}
+  99              	.L3:
+ 100              		.align	2
+ 101              	.L2:
+ 102 0044 00000000 		.word	GPIO_E
+ 103              		.cfi_endproc
+ 104              	.LFE0:
+ 106              		.align	1
+ 107              		.syntax unified
+ 108              		.code	16
+ 109              		.thumb_func
+ 110              		.fpu softvfp
+ 112              	graphic_ctrl_bit_clear:
+ 113              	.LFB1:
+  46:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+  47:/home/oscar/GitHub/Pong/graphicdisplay.c **** /* Adressera grfisk display och nollställ de bitar som är 1 i x */
+  48:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_ctrl_bit_clear(uint8_t x)
+  49:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 114              		.loc 1 49 0
+ 115              		.cfi_startproc
+ 116              		@ args = 0, pretend = 0, frame = 16
+ 117              		@ frame_needed = 1, uses_anonymous_args = 0
+ 118 0048 80B5     		push	{r7, lr}
+ 119              		.cfi_def_cfa_offset 8
+ 120              		.cfi_offset 7, -8
+ 121              		.cfi_offset 14, -4
+ 122 004a 84B0     		sub	sp, sp, #16
+ 123              		.cfi_def_cfa_offset 24
+ 124 004c 00AF     		add	r7, sp, #0
+ 125              		.cfi_def_cfa_register 7
+ 126 004e 0200     		movs	r2, r0
+ 127 0050 FB1D     		adds	r3, r7, #7
+ 128 0052 1A70     		strb	r2, [r3]
+  50:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t c = GPIO_E->ODR_LOW;
+ 129              		.loc 1 50 0
+ 130 0054 104B     		ldr	r3, .L5
+ 131 0056 1A68     		ldr	r2, [r3]
+ 132 0058 0F21     		movs	r1, #15
+ 133 005a 7B18     		adds	r3, r7, r1
+ 134 005c 127D     		ldrb	r2, [r2, #20]
+ 135 005e 1A70     		strb	r2, [r3]
+  51:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	c &= ~x;
+ 136              		.loc 1 51 0
+ 137 0060 FB1D     		adds	r3, r7, #7
+ 138 0062 1B78     		ldrb	r3, [r3]
+ 139 0064 5BB2     		sxtb	r3, r3
+ 140 0066 DB43     		mvns	r3, r3
+ 141 0068 5BB2     		sxtb	r3, r3
+ 142 006a 7A18     		adds	r2, r7, r1
+ 143 006c 1278     		ldrb	r2, [r2]
+ 144 006e 52B2     		sxtb	r2, r2
+ 145 0070 1340     		ands	r3, r2
+ 146 0072 5AB2     		sxtb	r2, r3
+ 147 0074 7B18     		adds	r3, r7, r1
+ 148 0076 1A70     		strb	r2, [r3]
+  52:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	c &= ~B_SELECT;
+ 149              		.loc 1 52 0
+ 150 0078 7B18     		adds	r3, r7, r1
+ 151 007a 0800     		movs	r0, r1
+ 152 007c 7A18     		adds	r2, r7, r1
+ 153 007e 1278     		ldrb	r2, [r2]
+ 154 0080 0421     		movs	r1, #4
+ 155 0082 8A43     		bics	r2, r1
+ 156 0084 1A70     		strb	r2, [r3]
+  53:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->ODR_LOW = c;
+ 157              		.loc 1 53 0
+ 158 0086 044B     		ldr	r3, .L5
+ 159 0088 1B68     		ldr	r3, [r3]
+ 160 008a 3A18     		adds	r2, r7, r0
+ 161 008c 1278     		ldrb	r2, [r2]
+ 162 008e 1A75     		strb	r2, [r3, #20]
+  54:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 163              		.loc 1 54 0
+ 164 0090 C046     		nop
+ 165 0092 BD46     		mov	sp, r7
+ 166 0094 04B0     		add	sp, sp, #16
+ 167              		@ sp needed
+ 168 0096 80BD     		pop	{r7, pc}
+ 169              	.L6:
+ 170              		.align	2
+ 171              	.L5:
+ 172 0098 00000000 		.word	GPIO_E
+ 173              		.cfi_endproc
+ 174              	.LFE1:
+ 176              		.align	1
+ 177              		.syntax unified
+ 178              		.code	16
+ 179              		.thumb_func
+ 180              		.fpu softvfp
+ 182              	graphic_select_controller:
+ 183              	.LFB2:
+  55:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+  56:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_select_controller(uint8_t controller)
+  57:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 184              		.loc 1 57 0
+ 185              		.cfi_startproc
+ 186              		@ args = 0, pretend = 0, frame = 8
+ 187              		@ frame_needed = 1, uses_anonymous_args = 0
+ 188 009c 80B5     		push	{r7, lr}
+ 189              		.cfi_def_cfa_offset 8
+ 190              		.cfi_offset 7, -8
+ 191              		.cfi_offset 14, -4
+ 192 009e 82B0     		sub	sp, sp, #8
+ 193              		.cfi_def_cfa_offset 16
+ 194 00a0 00AF     		add	r7, sp, #0
+ 195              		.cfi_def_cfa_register 7
+ 196 00a2 0200     		movs	r2, r0
+ 197 00a4 FB1D     		adds	r3, r7, #7
+ 198 00a6 1A70     		strb	r2, [r3]
+  58:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	switch (controller)
+ 199              		.loc 1 58 0
+ 200 00a8 FB1D     		adds	r3, r7, #7
+ 201 00aa 1B78     		ldrb	r3, [r3]
+ 202 00ac 082B     		cmp	r3, #8
+ 203 00ae 0CD0     		beq	.L9
+ 204 00b0 02DC     		bgt	.L10
+ 205 00b2 002B     		cmp	r3, #0
+ 206 00b4 05D0     		beq	.L11
+  59:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	{
+  60:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		case 0:
+  61:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_clear(B_CS1 | B_CS2); /* Nollställer B_CS1 och B_CS2 */
+  62:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+  63:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+  64:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		case B_CS1:
+  65:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_set(B_CS1); /* Ettställer B_CS1 */
+  66:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_clear(B_CS2); /* Nollställer B_CS2 */
+  67:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+  68:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+  69:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		case B_CS2:
+  70:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_clear(B_CS1); /* Nollställer B_CS1 */
+  71:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_set(B_CS2); /* Ettställer B_CS2 */
+  72:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+  73:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+  74:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		case B_CS1 | B_CS2:
+  75:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_set(B_CS1 | B_CS2); /* Ettställer B_CS1 och B_CS2 */
+  76:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+  77:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+  78:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 207              		.loc 1 78 0
+ 208 00b6 1AE0     		b	.L14
+ 209              	.L10:
+  58:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	switch (controller)
+ 210              		.loc 1 58 0
+ 211 00b8 102B     		cmp	r3, #16
+ 212 00ba 0DD0     		beq	.L12
+ 213 00bc 182B     		cmp	r3, #24
+ 214 00be 12D0     		beq	.L13
+ 215              		.loc 1 78 0
+ 216 00c0 15E0     		b	.L14
+ 217              	.L11:
+  61:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+ 218              		.loc 1 61 0
+ 219 00c2 1820     		movs	r0, #24
+ 220 00c4 FFF7C0FF 		bl	graphic_ctrl_bit_clear
+  62:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 221              		.loc 1 62 0
+ 222 00c8 11E0     		b	.L8
+ 223              	.L9:
+  65:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_clear(B_CS2); /* Nollställer B_CS2 */
+ 224              		.loc 1 65 0
+ 225 00ca 0820     		movs	r0, #8
+ 226 00cc FFF798FF 		bl	graphic_ctrl_bit_set
+  66:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+ 227              		.loc 1 66 0
+ 228 00d0 1020     		movs	r0, #16
+ 229 00d2 FFF7B9FF 		bl	graphic_ctrl_bit_clear
+  67:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 230              		.loc 1 67 0
+ 231 00d6 0AE0     		b	.L8
+ 232              	.L12:
+  70:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_ctrl_bit_set(B_CS2); /* Ettställer B_CS2 */
+ 233              		.loc 1 70 0
+ 234 00d8 0820     		movs	r0, #8
+ 235 00da FFF7B5FF 		bl	graphic_ctrl_bit_clear
+  71:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+ 236              		.loc 1 71 0
+ 237 00de 1020     		movs	r0, #16
+ 238 00e0 FFF78EFF 		bl	graphic_ctrl_bit_set
+  72:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 239              		.loc 1 72 0
+ 240 00e4 03E0     		b	.L8
+ 241              	.L13:
+  75:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+ 242              		.loc 1 75 0
+ 243 00e6 1820     		movs	r0, #24
+ 244 00e8 FFF78AFF 		bl	graphic_ctrl_bit_set
+  76:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 245              		.loc 1 76 0
+ 246 00ec C046     		nop
+ 247              	.L8:
+ 248              	.L14:
+ 249              		.loc 1 78 0
+ 250 00ee C046     		nop
+ 251 00f0 BD46     		mov	sp, r7
+ 252 00f2 02B0     		add	sp, sp, #8
+ 253              		@ sp needed
+ 254 00f4 80BD     		pop	{r7, pc}
+ 255              		.cfi_endproc
+ 256              	.LFE2:
+ 258              		.align	1
+ 259              		.syntax unified
+ 260              		.code	16
+ 261              		.thumb_func
+ 262              		.fpu softvfp
+ 264              	graphic_wait_ready:
+ 265              	.LFB3:
+  79:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+  80:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_wait_ready()
+  81:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 266              		.loc 1 81 0
+ 267              		.cfi_startproc
+ 268              		@ args = 0, pretend = 0, frame = 0
+ 269              		@ frame_needed = 1, uses_anonymous_args = 0
+ 270 00f6 80B5     		push	{r7, lr}
+ 271              		.cfi_def_cfa_offset 8
+ 272              		.cfi_offset 7, -8
+ 273              		.cfi_offset 14, -4
+ 274 00f8 00AF     		add	r7, sp, #0
+ 275              		.cfi_def_cfa_register 7
+  82:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 276              		.loc 1 82 0
+ 277 00fa 4020     		movs	r0, #64
+ 278 00fc FFF7A4FF 		bl	graphic_ctrl_bit_clear
+  83:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->MODER = 0x00005555; /* Sätter bitar 15-8 till inport och bitar 7-0 till utport */
+ 279              		.loc 1 83 0
+ 280 0100 154B     		ldr	r3, .L21
+ 281 0102 1B68     		ldr	r3, [r3]
+ 282 0104 154A     		ldr	r2, .L21+4
+ 283 0106 1A60     		str	r2, [r3]
+  84:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_RS); /* Nollställer B_RS */
+ 284              		.loc 1 84 0
+ 285 0108 0120     		movs	r0, #1
+ 286 010a FFF79DFF 		bl	graphic_ctrl_bit_clear
+  85:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_RW); /* Ettställer RW */
+ 287              		.loc 1 85 0
+ 288 010e 0220     		movs	r0, #2
+ 289 0110 FFF776FF 		bl	graphic_ctrl_bit_set
+  86:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_500ns();
+ 290              		.loc 1 86 0
+ 291 0114 FFF7FEFF 		bl	delay_500ns
+ 292              	.L18:
+  87:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	/* Väntar nu på att den grafiska displayen skall blir klar */
+  88:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	while(1) {
+  89:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
+ 293              		.loc 1 89 0
+ 294 0118 4020     		movs	r0, #64
+ 295 011a FFF771FF 		bl	graphic_ctrl_bit_set
+  90:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		delay_500ns();
+ 296              		.loc 1 90 0
+ 297 011e FFF7FEFF 		bl	delay_500ns
+  91:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 298              		.loc 1 91 0
+ 299 0122 4020     		movs	r0, #64
+ 300 0124 FFF790FF 		bl	graphic_ctrl_bit_clear
+  92:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		delay_500ns();
+ 301              		.loc 1 92 0
+ 302 0128 FFF7FEFF 		bl	delay_500ns
+  93:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		if ((GPIO_E->IDR_HIGH & LCD_BUSY) != LCD_BUSY) {
+ 303              		.loc 1 93 0
+ 304 012c 0A4B     		ldr	r3, .L21
+ 305 012e 1B68     		ldr	r3, [r3]
+ 306 0130 5B7C     		ldrb	r3, [r3, #17]
+ 307 0132 DBB2     		uxtb	r3, r3
+ 308 0134 1A00     		movs	r2, r3
+ 309 0136 8023     		movs	r3, #128
+ 310 0138 1340     		ands	r3, r2
+ 311 013a 802B     		cmp	r3, #128
+ 312 013c 00D1     		bne	.L20
+  89:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		delay_500ns();
+ 313              		.loc 1 89 0
+ 314 013e EBE7     		b	.L18
+ 315              	.L20:
+  94:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			break;
+ 316              		.loc 1 94 0
+ 317 0140 C046     		nop
+  95:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		}
+  96:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+  97:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+  98:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
+ 318              		.loc 1 98 0
+ 319 0142 4020     		movs	r0, #64
+ 320 0144 FFF75CFF 		bl	graphic_ctrl_bit_set
+  99:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->MODER = 0x55555555; /* Sätter samtliga bitar till utport */
+ 321              		.loc 1 99 0
+ 322 0148 034B     		ldr	r3, .L21
+ 323 014a 1B68     		ldr	r3, [r3]
+ 324 014c 044A     		ldr	r2, .L21+8
+ 325 014e 1A60     		str	r2, [r3]
+ 100:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 326              		.loc 1 100 0
+ 327 0150 C046     		nop
+ 328 0152 BD46     		mov	sp, r7
+ 329              		@ sp needed
+ 330 0154 80BD     		pop	{r7, pc}
+ 331              	.L22:
+ 332 0156 C046     		.align	2
+ 333              	.L21:
+ 334 0158 00000000 		.word	GPIO_E
+ 335 015c 55550000 		.word	21845
+ 336 0160 55555555 		.word	1431655765
+ 337              		.cfi_endproc
+ 338              	.LFE3:
+ 340              		.align	1
+ 341              		.syntax unified
+ 342              		.code	16
+ 343              		.thumb_func
+ 344              		.fpu softvfp
+ 346              	graphic_read:
+ 347              	.LFB4:
+ 101:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 102:/home/oscar/GitHub/Pong/graphicdisplay.c **** static uint8_t graphic_read(uint8_t controller)
+ 103:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 348              		.loc 1 103 0
+ 349              		.cfi_startproc
+ 350              		@ args = 0, pretend = 0, frame = 16
+ 351              		@ frame_needed = 1, uses_anonymous_args = 0
+ 352 0164 80B5     		push	{r7, lr}
+ 353              		.cfi_def_cfa_offset 8
+ 354              		.cfi_offset 7, -8
+ 355              		.cfi_offset 14, -4
+ 356 0166 84B0     		sub	sp, sp, #16
+ 357              		.cfi_def_cfa_offset 24
+ 358 0168 00AF     		add	r7, sp, #0
+ 359              		.cfi_def_cfa_register 7
+ 360 016a 0200     		movs	r2, r0
+ 361 016c FB1D     		adds	r3, r7, #7
+ 362 016e 1A70     		strb	r2, [r3]
+ 104:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 363              		.loc 1 104 0
+ 364 0170 4020     		movs	r0, #64
+ 365 0172 FFF769FF 		bl	graphic_ctrl_bit_clear
+ 105:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->MODER = 0x00005555; /* Sätter bitar 15-8 till inport och bitar 7-0 till utport */
+ 366              		.loc 1 105 0
+ 367 0176 1C4B     		ldr	r3, .L27
+ 368 0178 1B68     		ldr	r3, [r3]
+ 369 017a 1C4A     		ldr	r2, .L27+4
+ 370 017c 1A60     		str	r2, [r3]
+ 106:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_RS | B_RW); /* Ettställer B_RS och B_RW */
+ 371              		.loc 1 106 0
+ 372 017e 0320     		movs	r0, #3
+ 373 0180 FFF73EFF 		bl	graphic_ctrl_bit_set
+ 107:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_select_controller(controller); /* Väljer CS1, CS2, båda eller ingen */
+ 374              		.loc 1 107 0
+ 375 0184 FB1D     		adds	r3, r7, #7
+ 376 0186 1B78     		ldrb	r3, [r3]
+ 377 0188 1800     		movs	r0, r3
+ 378 018a FFF787FF 		bl	graphic_select_controller
+ 108:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_500ns();
+ 379              		.loc 1 108 0
+ 380 018e FFF7FEFF 		bl	delay_500ns
+ 109:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
+ 381              		.loc 1 109 0
+ 382 0192 4020     		movs	r0, #64
+ 383 0194 FFF734FF 		bl	graphic_ctrl_bit_set
+ 110:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_500ns();
+ 384              		.loc 1 110 0
+ 385 0198 FFF7FEFF 		bl	delay_500ns
+ 111:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t rv = GPIO_E->IDR_HIGH; /* Läser av statusen */
+ 386              		.loc 1 111 0
+ 387 019c 124B     		ldr	r3, .L27
+ 388 019e 1A68     		ldr	r2, [r3]
+ 389 01a0 0F23     		movs	r3, #15
+ 390 01a2 FB18     		adds	r3, r7, r3
+ 391 01a4 527C     		ldrb	r2, [r2, #17]
+ 392 01a6 1A70     		strb	r2, [r3]
+ 112:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 393              		.loc 1 112 0
+ 394 01a8 4020     		movs	r0, #64
+ 395 01aa FFF74DFF 		bl	graphic_ctrl_bit_clear
+ 113:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->MODER = 0x55555555; /* Sätter samtliga bitar till utport */
+ 396              		.loc 1 113 0
+ 397 01ae 0E4B     		ldr	r3, .L27
+ 398 01b0 1B68     		ldr	r3, [r3]
+ 399 01b2 0F4A     		ldr	r2, .L27+8
+ 400 01b4 1A60     		str	r2, [r3]
+ 114:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 115:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if (controller == B_CS1) {
+ 401              		.loc 1 115 0
+ 402 01b6 FB1D     		adds	r3, r7, #7
+ 403 01b8 1B78     		ldrb	r3, [r3]
+ 404 01ba 082B     		cmp	r3, #8
+ 405 01bc 04D1     		bne	.L24
+ 116:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_select_controller(B_CS1); /* Väljer CS1 */
+ 406              		.loc 1 116 0
+ 407 01be 0820     		movs	r0, #8
+ 408 01c0 FFF76CFF 		bl	graphic_select_controller
+ 117:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_wait_ready(); /* Väntar på att den grafiska displayen skall blir redo */
+ 409              		.loc 1 117 0
+ 410 01c4 FFF797FF 		bl	graphic_wait_ready
+ 411              	.L24:
+ 118:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 119:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if (controller == B_CS2) {
+ 412              		.loc 1 119 0
+ 413 01c8 FB1D     		adds	r3, r7, #7
+ 414 01ca 1B78     		ldrb	r3, [r3]
+ 415 01cc 102B     		cmp	r3, #16
+ 416 01ce 04D1     		bne	.L25
+ 120:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_select_controller(B_CS2);  /* Väljer CS2 */
+ 417              		.loc 1 120 0
+ 418 01d0 1020     		movs	r0, #16
+ 419 01d2 FFF763FF 		bl	graphic_select_controller
+ 121:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_wait_ready(); /* Väntar på att den grafiska displayen skall blir redo */
+ 420              		.loc 1 121 0
+ 421 01d6 FFF78EFF 		bl	graphic_wait_ready
+ 422              	.L25:
+ 122:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 123:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 124:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	return rv;
+ 423              		.loc 1 124 0
+ 424 01da 0F23     		movs	r3, #15
+ 425 01dc FB18     		adds	r3, r7, r3
+ 426 01de 1B78     		ldrb	r3, [r3]
+ 125:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 427              		.loc 1 125 0
+ 428 01e0 1800     		movs	r0, r3
+ 429 01e2 BD46     		mov	sp, r7
+ 430 01e4 04B0     		add	sp, sp, #16
+ 431              		@ sp needed
+ 432 01e6 80BD     		pop	{r7, pc}
+ 433              	.L28:
+ 434              		.align	2
+ 435              	.L27:
+ 436 01e8 00000000 		.word	GPIO_E
+ 437 01ec 55550000 		.word	21845
+ 438 01f0 55555555 		.word	1431655765
+ 439              		.cfi_endproc
+ 440              	.LFE4:
+ 442              		.align	1
+ 443              		.syntax unified
+ 444              		.code	16
+ 445              		.thumb_func
+ 446              		.fpu softvfp
+ 448              	graphic_write:
+ 449              	.LFB5:
+ 126:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 127:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_write(uint8_t value, uint8_t controller)
+ 128:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 450              		.loc 1 128 0
+ 451              		.cfi_startproc
+ 452              		@ args = 0, pretend = 0, frame = 8
+ 453              		@ frame_needed = 1, uses_anonymous_args = 0
+ 454 01f4 80B5     		push	{r7, lr}
+ 455              		.cfi_def_cfa_offset 8
+ 456              		.cfi_offset 7, -8
+ 457              		.cfi_offset 14, -4
+ 458 01f6 82B0     		sub	sp, sp, #8
+ 459              		.cfi_def_cfa_offset 16
+ 460 01f8 00AF     		add	r7, sp, #0
+ 461              		.cfi_def_cfa_register 7
+ 462 01fa 0200     		movs	r2, r0
+ 463 01fc FB1D     		adds	r3, r7, #7
+ 464 01fe 1A70     		strb	r2, [r3]
+ 465 0200 BB1D     		adds	r3, r7, #6
+ 466 0202 0A1C     		adds	r2, r1, #0
+ 467 0204 1A70     		strb	r2, [r3]
+ 129:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->ODR_HIGH = value; /* Skriver till dataregistret */
+ 468              		.loc 1 129 0
+ 469 0206 1B4B     		ldr	r3, .L32
+ 470 0208 1B68     		ldr	r3, [r3]
+ 471 020a FA1D     		adds	r2, r7, #7
+ 472 020c 1278     		ldrb	r2, [r2]
+ 473 020e 5A75     		strb	r2, [r3, #21]
+ 130:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_select_controller(controller); /* Väljer CS1, CS2, båda eller ingen */
+ 474              		.loc 1 130 0
+ 475 0210 BB1D     		adds	r3, r7, #6
+ 476 0212 1B78     		ldrb	r3, [r3]
+ 477 0214 1800     		movs	r0, r3
+ 478 0216 FFF741FF 		bl	graphic_select_controller
+ 131:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_500ns();
+ 479              		.loc 1 131 0
+ 480 021a FFF7FEFF 		bl	delay_500ns
+ 132:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
+ 481              		.loc 1 132 0
+ 482 021e 4020     		movs	r0, #64
+ 483 0220 FFF7EEFE 		bl	graphic_ctrl_bit_set
+ 133:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_500ns();
+ 484              		.loc 1 133 0
+ 485 0224 FFF7FEFF 		bl	delay_500ns
+ 134:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 486              		.loc 1 134 0
+ 487 0228 4020     		movs	r0, #64
+ 488 022a FFF70DFF 		bl	graphic_ctrl_bit_clear
+ 135:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 136:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if (controller & B_CS1) {
+ 489              		.loc 1 136 0
+ 490 022e BB1D     		adds	r3, r7, #6
+ 491 0230 1B78     		ldrb	r3, [r3]
+ 492 0232 0822     		movs	r2, #8
+ 493 0234 1340     		ands	r3, r2
+ 494 0236 04D0     		beq	.L30
+ 137:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_select_controller(B_CS1); /* Väljer CS1 */
+ 495              		.loc 1 137 0
+ 496 0238 0820     		movs	r0, #8
+ 497 023a FFF72FFF 		bl	graphic_select_controller
+ 138:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_wait_ready(); /* Väntar på att den grafiska displayen skall blir redo */
+ 498              		.loc 1 138 0
+ 499 023e FFF75AFF 		bl	graphic_wait_ready
+ 500              	.L30:
+ 139:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 140:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if (controller & B_CS2) {
+ 501              		.loc 1 140 0
+ 502 0242 BB1D     		adds	r3, r7, #6
+ 503 0244 1B78     		ldrb	r3, [r3]
+ 504 0246 1022     		movs	r2, #16
+ 505 0248 1340     		ands	r3, r2
+ 506 024a 04D0     		beq	.L31
+ 141:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_select_controller(B_CS2);  /* Väljer CS2 */
+ 507              		.loc 1 141 0
+ 508 024c 1020     		movs	r0, #16
+ 509 024e FFF725FF 		bl	graphic_select_controller
+ 142:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_wait_ready(); /* Väntar på att den grafiska displayen skall blir redo */
+ 510              		.loc 1 142 0
+ 511 0252 FFF750FF 		bl	graphic_wait_ready
+ 512              	.L31:
+ 143:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 144:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 145:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	GPIO_E->ODR_HIGH = 0; /* Nollställer dataregistret */
+ 513              		.loc 1 145 0
+ 514 0256 074B     		ldr	r3, .L32
+ 515 0258 1B68     		ldr	r3, [r3]
+ 516 025a 0022     		movs	r2, #0
+ 517 025c 5A75     		strb	r2, [r3, #21]
+ 146:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
+ 518              		.loc 1 146 0
+ 519 025e 4020     		movs	r0, #64
+ 520 0260 FFF7CEFE 		bl	graphic_ctrl_bit_set
+ 147:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_select_controller(0); /* Deaktiverar båda CS-signalerna */
+ 521              		.loc 1 147 0
+ 522 0264 0020     		movs	r0, #0
+ 523 0266 FFF719FF 		bl	graphic_select_controller
+ 148:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 524              		.loc 1 148 0
+ 525 026a C046     		nop
+ 526 026c BD46     		mov	sp, r7
+ 527 026e 02B0     		add	sp, sp, #8
+ 528              		@ sp needed
+ 529 0270 80BD     		pop	{r7, pc}
+ 530              	.L33:
+ 531 0272 C046     		.align	2
+ 532              	.L32:
+ 533 0274 00000000 		.word	GPIO_E
+ 534              		.cfi_endproc
+ 535              	.LFE5:
+ 537              		.align	1
+ 538              		.syntax unified
+ 539              		.code	16
+ 540              		.thumb_func
+ 541              		.fpu softvfp
+ 543              	graphic_write_command:
+ 544              	.LFB6:
+ 149:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 150:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_write_command(uint8_t command, uint8_t controller)
+ 151:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 545              		.loc 1 151 0
+ 546              		.cfi_startproc
+ 547              		@ args = 0, pretend = 0, frame = 8
+ 548              		@ frame_needed = 1, uses_anonymous_args = 0
+ 549 0278 80B5     		push	{r7, lr}
+ 550              		.cfi_def_cfa_offset 8
+ 551              		.cfi_offset 7, -8
+ 552              		.cfi_offset 14, -4
+ 553 027a 82B0     		sub	sp, sp, #8
+ 554              		.cfi_def_cfa_offset 16
+ 555 027c 00AF     		add	r7, sp, #0
+ 556              		.cfi_def_cfa_register 7
+ 557 027e 0200     		movs	r2, r0
+ 558 0280 FB1D     		adds	r3, r7, #7
+ 559 0282 1A70     		strb	r2, [r3]
+ 560 0284 BB1D     		adds	r3, r7, #6
+ 561 0286 0A1C     		adds	r2, r1, #0
+ 562 0288 1A70     		strb	r2, [r3]
+ 152:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 563              		.loc 1 152 0
+ 564 028a 4020     		movs	r0, #64
+ 565 028c FFF7DCFE 		bl	graphic_ctrl_bit_clear
+ 153:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_select_controller(controller); /* Väljer CS1, CS2, båda eller ingen */
+ 566              		.loc 1 153 0
+ 567 0290 BB1D     		adds	r3, r7, #6
+ 568 0292 1B78     		ldrb	r3, [r3]
+ 569 0294 1800     		movs	r0, r3
+ 570 0296 FFF701FF 		bl	graphic_select_controller
+ 154:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_RS | B_RW); /* Nollställer B_RS och B_RW */
+ 571              		.loc 1 154 0
+ 572 029a 0320     		movs	r0, #3
+ 573 029c FFF7D4FE 		bl	graphic_ctrl_bit_clear
+ 155:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write(command, controller);
+ 574              		.loc 1 155 0
+ 575 02a0 BB1D     		adds	r3, r7, #6
+ 576 02a2 1A78     		ldrb	r2, [r3]
+ 577 02a4 FB1D     		adds	r3, r7, #7
+ 578 02a6 1B78     		ldrb	r3, [r3]
+ 579 02a8 1100     		movs	r1, r2
+ 580 02aa 1800     		movs	r0, r3
+ 581 02ac FFF7A2FF 		bl	graphic_write
+ 156:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 582              		.loc 1 156 0
+ 583 02b0 C046     		nop
+ 584 02b2 BD46     		mov	sp, r7
+ 585 02b4 02B0     		add	sp, sp, #8
+ 586              		@ sp needed
+ 587 02b6 80BD     		pop	{r7, pc}
+ 588              		.cfi_endproc
+ 589              	.LFE6:
+ 591              		.align	1
+ 592              		.syntax unified
+ 593              		.code	16
+ 594              		.thumb_func
+ 595              		.fpu softvfp
+ 597              	graphic_write_data:
+ 598              	.LFB7:
+ 157:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 158:/home/oscar/GitHub/Pong/graphicdisplay.c **** static void graphic_write_data(uint8_t data, uint8_t controller)
+ 159:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 599              		.loc 1 159 0
+ 600              		.cfi_startproc
+ 601              		@ args = 0, pretend = 0, frame = 8
+ 602              		@ frame_needed = 1, uses_anonymous_args = 0
+ 603 02b8 80B5     		push	{r7, lr}
+ 604              		.cfi_def_cfa_offset 8
+ 605              		.cfi_offset 7, -8
+ 606              		.cfi_offset 14, -4
+ 607 02ba 82B0     		sub	sp, sp, #8
+ 608              		.cfi_def_cfa_offset 16
+ 609 02bc 00AF     		add	r7, sp, #0
+ 610              		.cfi_def_cfa_register 7
+ 611 02be 0200     		movs	r2, r0
+ 612 02c0 FB1D     		adds	r3, r7, #7
+ 613 02c2 1A70     		strb	r2, [r3]
+ 614 02c4 BB1D     		adds	r3, r7, #6
+ 615 02c6 0A1C     		adds	r2, r1, #0
+ 616 02c8 1A70     		strb	r2, [r3]
+ 160:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 617              		.loc 1 160 0
+ 618 02ca 4020     		movs	r0, #64
+ 619 02cc FFF7BCFE 		bl	graphic_ctrl_bit_clear
+ 161:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_select_controller(controller); /* Väljer CS1, CS2, båda eller ingen */
+ 620              		.loc 1 161 0
+ 621 02d0 BB1D     		adds	r3, r7, #6
+ 622 02d2 1B78     		ldrb	r3, [r3]
+ 623 02d4 1800     		movs	r0, r3
+ 624 02d6 FFF7E1FE 		bl	graphic_select_controller
+ 162:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_RS); /* Ettställer B_RS */
+ 625              		.loc 1 162 0
+ 626 02da 0120     		movs	r0, #1
+ 627 02dc FFF790FE 		bl	graphic_ctrl_bit_set
+ 163:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_RW); /* Nollställer RW */
+ 628              		.loc 1 163 0
+ 629 02e0 0220     		movs	r0, #2
+ 630 02e2 FFF7B1FE 		bl	graphic_ctrl_bit_clear
+ 164:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write(data, controller);
+ 631              		.loc 1 164 0
+ 632 02e6 BB1D     		adds	r3, r7, #6
+ 633 02e8 1A78     		ldrb	r2, [r3]
+ 634 02ea FB1D     		adds	r3, r7, #7
+ 635 02ec 1B78     		ldrb	r3, [r3]
+ 636 02ee 1100     		movs	r1, r2
+ 637 02f0 1800     		movs	r0, r3
+ 638 02f2 FFF77FFF 		bl	graphic_write
+ 165:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 639              		.loc 1 165 0
+ 640 02f6 C046     		nop
+ 641 02f8 BD46     		mov	sp, r7
+ 642 02fa 02B0     		add	sp, sp, #8
+ 643              		@ sp needed
+ 644 02fc 80BD     		pop	{r7, pc}
+ 645              		.cfi_endproc
+ 646              	.LFE7:
+ 648              		.align	1
+ 649              		.syntax unified
+ 650              		.code	16
+ 651              		.thumb_func
+ 652              		.fpu softvfp
+ 654              	graphic_read_data:
+ 655              	.LFB8:
+ 166:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 167:/home/oscar/GitHub/Pong/graphicdisplay.c **** static uint8_t graphic_read_data(uint8_t controller)
+ 168:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 656              		.loc 1 168 0
+ 657              		.cfi_startproc
+ 658              		@ args = 0, pretend = 0, frame = 8
+ 659              		@ frame_needed = 1, uses_anonymous_args = 0
+ 660 02fe 80B5     		push	{r7, lr}
+ 661              		.cfi_def_cfa_offset 8
+ 662              		.cfi_offset 7, -8
+ 663              		.cfi_offset 14, -4
+ 664 0300 82B0     		sub	sp, sp, #8
+ 665              		.cfi_def_cfa_offset 16
+ 666 0302 00AF     		add	r7, sp, #0
+ 667              		.cfi_def_cfa_register 7
+ 668 0304 0200     		movs	r2, r0
+ 669 0306 FB1D     		adds	r3, r7, #7
+ 670 0308 1A70     		strb	r2, [r3]
+ 169:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	/* En läsning måste göras två gånger för att displayen skall returnera korret data */
+ 170:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	(void) graphic_read(controller); /* Returnerar nonsens */
+ 671              		.loc 1 170 0
+ 672 030a FB1D     		adds	r3, r7, #7
+ 673 030c 1B78     		ldrb	r3, [r3]
+ 674 030e 1800     		movs	r0, r3
+ 675 0310 FFF728FF 		bl	graphic_read
+ 171:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	return graphic_read(controller); /* Returnerar korrekt data */
+ 676              		.loc 1 171 0
+ 677 0314 FB1D     		adds	r3, r7, #7
+ 678 0316 1B78     		ldrb	r3, [r3]
+ 679 0318 1800     		movs	r0, r3
+ 680 031a FFF723FF 		bl	graphic_read
+ 681 031e 0300     		movs	r3, r0
+ 172:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 682              		.loc 1 172 0
+ 683 0320 1800     		movs	r0, r3
+ 684 0322 BD46     		mov	sp, r7
+ 685 0324 02B0     		add	sp, sp, #8
+ 686              		@ sp needed
+ 687 0326 80BD     		pop	{r7, pc}
+ 688              		.cfi_endproc
+ 689              	.LFE8:
+ 691              		.align	1
+ 692              		.global	graphic_clear_screen
+ 693              		.syntax unified
+ 694              		.code	16
+ 695              		.thumb_func
+ 696              		.fpu softvfp
+ 698              	graphic_clear_screen:
+ 699              	.LFB9:
+ 173:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 174:/home/oscar/GitHub/Pong/graphicdisplay.c **** void graphic_clear_screen(void)
+ 175:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 700              		.loc 1 175 0
+ 701              		.cfi_startproc
+ 702              		@ args = 0, pretend = 0, frame = 8
+ 703              		@ frame_needed = 1, uses_anonymous_args = 0
+ 704 0328 80B5     		push	{r7, lr}
+ 705              		.cfi_def_cfa_offset 8
+ 706              		.cfi_offset 7, -8
+ 707              		.cfi_offset 14, -4
+ 708 032a 82B0     		sub	sp, sp, #8
+ 709              		.cfi_def_cfa_offset 16
+ 710 032c 00AF     		add	r7, sp, #0
+ 711              		.cfi_def_cfa_register 7
+ 712              	.LBB2:
+ 176:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	for (uint8_t page = 0; page < LCD_PAGES; page++) {
+ 713              		.loc 1 176 0
+ 714 032e FB1D     		adds	r3, r7, #7
+ 715 0330 0022     		movs	r2, #0
+ 716 0332 1A70     		strb	r2, [r3]
+ 717 0334 24E0     		b	.L39
+ 718              	.L42:
+ 177:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 178:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_write_command(LCD_SET_PAGE | page, B_CS1 | B_CS2);
+ 719              		.loc 1 178 0
+ 720 0336 FB1D     		adds	r3, r7, #7
+ 721 0338 1B78     		ldrb	r3, [r3]
+ 722 033a 4822     		movs	r2, #72
+ 723 033c 5242     		rsbs	r2, r2, #0
+ 724 033e 1343     		orrs	r3, r2
+ 725 0340 DBB2     		uxtb	r3, r3
+ 726 0342 1821     		movs	r1, #24
+ 727 0344 1800     		movs	r0, r3
+ 728 0346 FFF797FF 		bl	graphic_write_command
+ 179:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		graphic_write_command(LCD_SET_ADD, B_CS1 | B_CS2);
+ 729              		.loc 1 179 0
+ 730 034a 1821     		movs	r1, #24
+ 731 034c 4020     		movs	r0, #64
+ 732 034e FFF793FF 		bl	graphic_write_command
+ 733              	.LBB3:
+ 180:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 181:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		for (uint8_t add = 0; add < LCD_ADDS; add++) {
+ 734              		.loc 1 181 0
+ 735 0352 BB1D     		adds	r3, r7, #6
+ 736 0354 0022     		movs	r2, #0
+ 737 0356 1A70     		strb	r2, [r3]
+ 738 0358 08E0     		b	.L40
+ 739              	.L41:
+ 182:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			/*
+ 183:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			#ifndef SIMULATOR
+ 184:/home/oscar/GitHub/Pong/graphicdisplay.c **** 				graphic_write_command(LCD_SET_ADD | add, B_CS1 | B_CS2);
+ 185:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			#endif
+ 186:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			*/
+ 187:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_write_data(0, B_CS1 | B_CS2);
+ 740              		.loc 1 187 0 discriminator 3
+ 741 035a 1821     		movs	r1, #24
+ 742 035c 0020     		movs	r0, #0
+ 743 035e FFF7ABFF 		bl	graphic_write_data
+ 181:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			/*
+ 744              		.loc 1 181 0 discriminator 3
+ 745 0362 BB1D     		adds	r3, r7, #6
+ 746 0364 1A78     		ldrb	r2, [r3]
+ 747 0366 BB1D     		adds	r3, r7, #6
+ 748 0368 0132     		adds	r2, r2, #1
+ 749 036a 1A70     		strb	r2, [r3]
+ 750              	.L40:
+ 181:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			/*
+ 751              		.loc 1 181 0 is_stmt 0 discriminator 1
+ 752 036c 4022     		movs	r2, #64
+ 753 036e BB1D     		adds	r3, r7, #6
+ 754 0370 1B78     		ldrb	r3, [r3]
+ 755 0372 9342     		cmp	r3, r2
+ 756 0374 F1D3     		bcc	.L41
+ 757              	.LBE3:
+ 176:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 758              		.loc 1 176 0 is_stmt 1 discriminator 2
+ 759 0376 FB1D     		adds	r3, r7, #7
+ 760 0378 1A78     		ldrb	r2, [r3]
+ 761 037a FB1D     		adds	r3, r7, #7
+ 762 037c 0132     		adds	r2, r2, #1
+ 763 037e 1A70     		strb	r2, [r3]
+ 764              	.L39:
+ 176:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 765              		.loc 1 176 0 is_stmt 0 discriminator 1
+ 766 0380 0822     		movs	r2, #8
+ 767 0382 FB1D     		adds	r3, r7, #7
+ 768 0384 1B78     		ldrb	r3, [r3]
+ 769 0386 9342     		cmp	r3, r2
+ 770 0388 D5D3     		bcc	.L42
+ 771              	.LBE2:
+ 188:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 189:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		}
+ 190:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 191:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 772              		.loc 1 191 0 is_stmt 1
+ 773 038a C046     		nop
+ 774 038c BD46     		mov	sp, r7
+ 775 038e 02B0     		add	sp, sp, #8
+ 776              		@ sp needed
+ 777 0390 80BD     		pop	{r7, pc}
+ 778              		.cfi_endproc
+ 779              	.LFE9:
+ 781              		.align	1
+ 782              		.global	graphic_initialise
+ 783              		.syntax unified
+ 784              		.code	16
+ 785              		.thumb_func
+ 786              		.fpu softvfp
+ 788              	graphic_initialise:
+ 789              	.LFB10:
+ 192:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 193:/home/oscar/GitHub/Pong/graphicdisplay.c **** void graphic_initialise(void)
+ 194:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 790              		.loc 1 194 0
+ 791              		.cfi_startproc
+ 792              		@ args = 0, pretend = 0, frame = 0
+ 793              		@ frame_needed = 1, uses_anonymous_args = 0
+ 794 0392 80B5     		push	{r7, lr}
+ 795              		.cfi_def_cfa_offset 8
+ 796              		.cfi_offset 7, -8
+ 797              		.cfi_offset 14, -4
+ 798 0394 00AF     		add	r7, sp, #0
+ 799              		.cfi_def_cfa_register 7
+ 195:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_E); /* Ettställer B_E */
+ 800              		.loc 1 195 0
+ 801 0396 4020     		movs	r0, #64
+ 802 0398 FFF732FE 		bl	graphic_ctrl_bit_set
+ 196:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_mikro(10);
+ 803              		.loc 1 196 0
+ 804 039c 0A20     		movs	r0, #10
+ 805 039e FFF7FEFF 		bl	delay_mikro
+ 197:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_CS1 | B_CS2 | B_RESET); /* Nollställer B_CS1, B_CS2 och B_RESET */
+ 806              		.loc 1 197 0
+ 807 03a2 3820     		movs	r0, #56
+ 808 03a4 FFF750FE 		bl	graphic_ctrl_bit_clear
+ 198:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_clear(B_E); /* Nollställer B_E */
+ 809              		.loc 1 198 0
+ 810 03a8 4020     		movs	r0, #64
+ 811 03aa FFF74DFE 		bl	graphic_ctrl_bit_clear
+ 199:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	delay_milli(30);
+ 812              		.loc 1 199 0
+ 813 03ae 1E20     		movs	r0, #30
+ 814 03b0 FFF7FEFF 		bl	delay_milli
+ 200:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_ctrl_bit_set(B_RESET); /* Ettställer B_RESET */
+ 815              		.loc 1 200 0
+ 816 03b4 2020     		movs	r0, #32
+ 817 03b6 FFF723FE 		bl	graphic_ctrl_bit_set
+ 201:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write_command(LCD_OFF, B_CS1 | B_CS2);
+ 818              		.loc 1 201 0
+ 819 03ba 1821     		movs	r1, #24
+ 820 03bc 3E20     		movs	r0, #62
+ 821 03be FFF75BFF 		bl	graphic_write_command
+ 202:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write_command(LCD_ON, B_CS1 | B_CS2); /* Toggla display */
+ 822              		.loc 1 202 0
+ 823 03c2 1821     		movs	r1, #24
+ 824 03c4 3F20     		movs	r0, #63
+ 825 03c6 FFF757FF 		bl	graphic_write_command
+ 203:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write_command(LCD_DISPLAY_START, B_CS1 | B_CS2); /* start = 0 */
+ 826              		.loc 1 203 0
+ 827 03ca 1821     		movs	r1, #24
+ 828 03cc C020     		movs	r0, #192
+ 829 03ce FFF753FF 		bl	graphic_write_command
+ 204:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write_command(LCD_SET_ADD, B_CS1 | B_CS2); /* add = 0 */
+ 830              		.loc 1 204 0
+ 831 03d2 1821     		movs	r1, #24
+ 832 03d4 4020     		movs	r0, #64
+ 833 03d6 FFF74FFF 		bl	graphic_write_command
+ 205:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_write_command(LCD_SET_PAGE, B_CS1 | B_CS2); /* page = 0 */
+ 834              		.loc 1 205 0
+ 835 03da 1821     		movs	r1, #24
+ 836 03dc B820     		movs	r0, #184
+ 837 03de FFF74BFF 		bl	graphic_write_command
+ 206:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 207:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	graphic_select_controller(0); /* Deaktiverar båda CS-signalerna */
+ 838              		.loc 1 207 0
+ 839 03e2 0020     		movs	r0, #0
+ 840 03e4 FFF75AFE 		bl	graphic_select_controller
+ 208:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 841              		.loc 1 208 0
+ 842 03e8 C046     		nop
+ 843 03ea BD46     		mov	sp, r7
+ 844              		@ sp needed
+ 845 03ec 80BD     		pop	{r7, pc}
+ 846              		.cfi_endproc
+ 847              	.LFE10:
+ 849              		.align	1
+ 850              		.global	pixel
+ 851              		.syntax unified
+ 852              		.code	16
+ 853              		.thumb_func
+ 854              		.fpu softvfp
+ 856              	pixel:
+ 857              	.LFB11:
+ 209:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 210:/home/oscar/GitHub/Pong/graphicdisplay.c **** void pixel(uint8_t x, uint8_t y, uint8_t set)
+ 211:/home/oscar/GitHub/Pong/graphicdisplay.c **** {
+ 858              		.loc 1 211 0
+ 859              		.cfi_startproc
+ 860              		@ args = 0, pretend = 0, frame = 16
+ 861              		@ frame_needed = 1, uses_anonymous_args = 0
+ 862 03ee 90B5     		push	{r4, r7, lr}
+ 863              		.cfi_def_cfa_offset 12
+ 864              		.cfi_offset 4, -12
+ 865              		.cfi_offset 7, -8
+ 866              		.cfi_offset 14, -4
+ 867 03f0 85B0     		sub	sp, sp, #20
+ 868              		.cfi_def_cfa_offset 32
+ 869 03f2 00AF     		add	r7, sp, #0
+ 870              		.cfi_def_cfa_register 7
+ 871 03f4 0400     		movs	r4, r0
+ 872 03f6 0800     		movs	r0, r1
+ 873 03f8 1100     		movs	r1, r2
+ 874 03fa FB1D     		adds	r3, r7, #7
+ 875 03fc 221C     		adds	r2, r4, #0
+ 876 03fe 1A70     		strb	r2, [r3]
+ 877 0400 BB1D     		adds	r3, r7, #6
+ 878 0402 021C     		adds	r2, r0, #0
+ 879 0404 1A70     		strb	r2, [r3]
+ 880 0406 7B1D     		adds	r3, r7, #5
+ 881 0408 0A1C     		adds	r2, r1, #0
+ 882 040a 1A70     		strb	r2, [r3]
+ 212:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	/*Make sure pixel is within bounds*/
+ 213:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if ((x >= LCD_WIDTH && y >= LCD_HEIGHT)) {
+ 883              		.loc 1 213 0
+ 884 040c 8022     		movs	r2, #128
+ 885 040e FB1D     		adds	r3, r7, #7
+ 886 0410 1B78     		ldrb	r3, [r3]
+ 887 0412 9342     		cmp	r3, r2
+ 888 0414 04D3     		bcc	.L45
+ 889              		.loc 1 213 0 is_stmt 0 discriminator 1
+ 890 0416 4022     		movs	r2, #64
+ 891 0418 BB1D     		adds	r3, r7, #6
+ 892 041a 1B78     		ldrb	r3, [r3]
+ 893 041c 9342     		cmp	r3, r2
+ 894 041e 69D2     		bcs	.L51
+ 895              	.L45:
+ 214:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		return;
+ 215:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 216:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 217:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 218:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	/* Skapa en bitmask för y-koordinaten */
+ 219:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 220:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t page = (y) / 8;
+ 896              		.loc 1 220 0 is_stmt 1
+ 897 0420 0E23     		movs	r3, #14
+ 898 0422 FB18     		adds	r3, r7, r3
+ 899 0424 BA1D     		adds	r2, r7, #6
+ 900 0426 1278     		ldrb	r2, [r2]
+ 901 0428 D208     		lsrs	r2, r2, #3
+ 902 042a 1A70     		strb	r2, [r3]
+ 221:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t add = x;
+ 903              		.loc 1 221 0
+ 904 042c 0D23     		movs	r3, #13
+ 905 042e FB18     		adds	r3, r7, r3
+ 906 0430 FA1D     		adds	r2, r7, #7
+ 907 0432 1278     		ldrb	r2, [r2]
+ 908 0434 1A70     		strb	r2, [r3]
+ 222:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 223:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t mask;
+ 224:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t bitIndex = (((y)+8) % 8);
+ 909              		.loc 1 224 0
+ 910 0436 BB1D     		adds	r3, r7, #6
+ 911 0438 1B78     		ldrb	r3, [r3]
+ 912 043a 0833     		adds	r3, r3, #8
+ 913 043c 2F4A     		ldr	r2, .L52
+ 914 043e 1340     		ands	r3, r2
+ 915 0440 04D5     		bpl	.L47
+ 916 0442 013B     		subs	r3, r3, #1
+ 917 0444 0822     		movs	r2, #8
+ 918 0446 5242     		rsbs	r2, r2, #0
+ 919 0448 1343     		orrs	r3, r2
+ 920 044a 0133     		adds	r3, r3, #1
+ 921              	.L47:
+ 922 044c 1A00     		movs	r2, r3
+ 923 044e 0C21     		movs	r1, #12
+ 924 0450 7B18     		adds	r3, r7, r1
+ 925 0452 1A70     		strb	r2, [r3]
+ 225:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 226:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	mask = 1 << bitIndex;
+ 926              		.loc 1 226 0
+ 927 0454 7B18     		adds	r3, r7, r1
+ 928 0456 1B78     		ldrb	r3, [r3]
+ 929 0458 0122     		movs	r2, #1
+ 930 045a 9A40     		lsls	r2, r2, r3
+ 931 045c 0F23     		movs	r3, #15
+ 932 045e FB18     		adds	r3, r7, r3
+ 933 0460 1A70     		strb	r2, [r3]
+ 227:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 228:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	//uint8_t mask = 1 << ((y - 1) & 7); /* & 7 är ekvivalnet med % 8 */ // Vad är detta? &?
+ 229:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if (!set) {
+ 934              		.loc 1 229 0
+ 935 0462 7B1D     		adds	r3, r7, #5
+ 936 0464 1B78     		ldrb	r3, [r3]
+ 937 0466 002B     		cmp	r3, #0
+ 938 0468 05D1     		bne	.L48
+ 230:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		mask = ~mask;
+ 939              		.loc 1 230 0
+ 940 046a 0F22     		movs	r2, #15
+ 941 046c BB18     		adds	r3, r7, r2
+ 942 046e BA18     		adds	r2, r7, r2
+ 943 0470 1278     		ldrb	r2, [r2]
+ 944 0472 D243     		mvns	r2, r2
+ 945 0474 1A70     		strb	r2, [r3]
+ 946              	.L48:
+ 231:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 232:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 233:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	uint8_t temp = buffer.buf[8*add+page];
+ 947              		.loc 1 233 0
+ 948 0476 0D23     		movs	r3, #13
+ 949 0478 FB18     		adds	r3, r7, r3
+ 950 047a 1B78     		ldrb	r3, [r3]
+ 951 047c DA00     		lsls	r2, r3, #3
+ 952 047e 0E23     		movs	r3, #14
+ 953 0480 FB18     		adds	r3, r7, r3
+ 954 0482 1B78     		ldrb	r3, [r3]
+ 955 0484 D218     		adds	r2, r2, r3
+ 956 0486 0B23     		movs	r3, #11
+ 957 0488 FB18     		adds	r3, r7, r3
+ 958 048a 1D49     		ldr	r1, .L52+4
+ 959 048c 8A5C     		ldrb	r2, [r1, r2]
+ 960 048e 1A70     		strb	r2, [r3]
+ 234:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 235:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	if (!set) {
+ 961              		.loc 1 235 0
+ 962 0490 7B1D     		adds	r3, r7, #5
+ 963 0492 1B78     		ldrb	r3, [r3]
+ 964 0494 002B     		cmp	r3, #0
+ 965 0496 09D1     		bne	.L49
+ 236:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		mask &= temp;
+ 966              		.loc 1 236 0
+ 967 0498 0F22     		movs	r2, #15
+ 968 049a BB18     		adds	r3, r7, r2
+ 969 049c BA18     		adds	r2, r7, r2
+ 970 049e 0B21     		movs	r1, #11
+ 971 04a0 7918     		adds	r1, r7, r1
+ 972 04a2 1278     		ldrb	r2, [r2]
+ 973 04a4 0978     		ldrb	r1, [r1]
+ 974 04a6 0A40     		ands	r2, r1
+ 975 04a8 1A70     		strb	r2, [r3]
+ 976 04aa 08E0     		b	.L50
+ 977              	.L49:
+ 237:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 238:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	else {
+ 239:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		mask |= temp;
+ 978              		.loc 1 239 0
+ 979 04ac 0F22     		movs	r2, #15
+ 980 04ae BB18     		adds	r3, r7, r2
+ 981 04b0 B918     		adds	r1, r7, r2
+ 982 04b2 0B22     		movs	r2, #11
+ 983 04b4 BA18     		adds	r2, r7, r2
+ 984 04b6 0978     		ldrb	r1, [r1]
+ 985 04b8 1278     		ldrb	r2, [r2]
+ 986 04ba 0A43     		orrs	r2, r1
+ 987 04bc 1A70     		strb	r2, [r3]
+ 988              	.L50:
+ 240:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 241:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 242:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	buffer.buf[8*add+page] = mask;
+ 989              		.loc 1 242 0
+ 990 04be 0D20     		movs	r0, #13
+ 991 04c0 3B18     		adds	r3, r7, r0
+ 992 04c2 1B78     		ldrb	r3, [r3]
+ 993 04c4 DA00     		lsls	r2, r3, #3
+ 994 04c6 0E24     		movs	r4, #14
+ 995 04c8 3B19     		adds	r3, r7, r4
+ 996 04ca 1B78     		ldrb	r3, [r3]
+ 997 04cc D318     		adds	r3, r2, r3
+ 998 04ce 0C4A     		ldr	r2, .L52+4
+ 999 04d0 0F21     		movs	r1, #15
+ 1000 04d2 7918     		adds	r1, r7, r1
+ 1001 04d4 0978     		ldrb	r1, [r1]
+ 1002 04d6 D154     		strb	r1, [r2, r3]
+ 243:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	buffer.changed[8*add+page] = 0b11111111;
+ 1003              		.loc 1 243 0
+ 1004 04d8 3B18     		adds	r3, r7, r0
+ 1005 04da 1B78     		ldrb	r3, [r3]
+ 1006 04dc DA00     		lsls	r2, r3, #3
+ 1007 04de 3B19     		adds	r3, r7, r4
+ 1008 04e0 1B78     		ldrb	r3, [r3]
+ 1009 04e2 D218     		adds	r2, r2, r3
+ 1010 04e4 0649     		ldr	r1, .L52+4
+ 1011 04e6 8023     		movs	r3, #128
+ 1012 04e8 DB00     		lsls	r3, r3, #3
+ 1013 04ea 8A18     		adds	r2, r1, r2
+ 1014 04ec D318     		adds	r3, r2, r3
+ 1015 04ee FF22     		movs	r2, #255
+ 1016 04f0 1A70     		strb	r2, [r3]
+ 1017 04f2 00E0     		b	.L44
+ 1018              	.L51:
+ 214:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 1019              		.loc 1 214 0
+ 1020 04f4 C046     		nop
+ 1021              	.L44:
+ 244:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 245:/home/oscar/GitHub/Pong/graphicdisplay.c **** }
+ 1022              		.loc 1 245 0
+ 1023 04f6 BD46     		mov	sp, r7
+ 1024 04f8 05B0     		add	sp, sp, #20
+ 1025              		@ sp needed
+ 1026 04fa 90BD     		pop	{r4, r7, pc}
+ 1027              	.L53:
+ 1028              		.align	2
+ 1029              	.L52:
+ 1030 04fc 07000080 		.word	-2147483641
+ 1031 0500 00000000 		.word	buffer
+ 1032              		.cfi_endproc
+ 1033              	.LFE11:
+ 1035              		.align	1
+ 1036              		.global	draw_buffer
+ 1037              		.syntax unified
+ 1038              		.code	16
+ 1039              		.thumb_func
+ 1040              		.fpu softvfp
+ 1042              	draw_buffer:
+ 1043              	.LFB12:
+ 246:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 247:/home/oscar/GitHub/Pong/graphicdisplay.c **** void draw_buffer(void){
+ 1044              		.loc 1 247 0
+ 1045              		.cfi_startproc
+ 1046              		@ args = 0, pretend = 0, frame = 8
+ 1047              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1048 0504 80B5     		push	{r7, lr}
+ 1049              		.cfi_def_cfa_offset 8
+ 1050              		.cfi_offset 7, -8
+ 1051              		.cfi_offset 14, -4
+ 1052 0506 82B0     		sub	sp, sp, #8
+ 1053              		.cfi_def_cfa_offset 16
+ 1054 0508 00AF     		add	r7, sp, #0
+ 1055              		.cfi_def_cfa_register 7
+ 1056              	.LBB4:
+ 248:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	
+ 249:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	for(uint32_t i = 0; i < (LCD_HEIGHT/8)*LCD_WIDTH; i++){
+ 1057              		.loc 1 249 0
+ 1058 050a 0023     		movs	r3, #0
+ 1059 050c 7B60     		str	r3, [r7, #4]
+ 1060 050e 5EE0     		b	.L55
+ 1061              	.L59:
+ 1062              	.LBB5:
+ 250:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 251:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		uint8_t page = i%8;
+ 1063              		.loc 1 251 0
+ 1064 0510 7B68     		ldr	r3, [r7, #4]
+ 1065 0512 DAB2     		uxtb	r2, r3
+ 1066 0514 7B1C     		adds	r3, r7, #1
+ 1067 0516 0721     		movs	r1, #7
+ 1068 0518 0A40     		ands	r2, r1
+ 1069 051a 1A70     		strb	r2, [r3]
+ 252:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		uint8_t add = i/8;
+ 1070              		.loc 1 252 0
+ 1071 051c 7B68     		ldr	r3, [r7, #4]
+ 1072 051e DA08     		lsrs	r2, r3, #3
+ 1073 0520 FB1C     		adds	r3, r7, #3
+ 1074 0522 1A70     		strb	r2, [r3]
+ 253:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 254:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		if(buffer.changed[8*add+page]){
+ 1075              		.loc 1 254 0
+ 1076 0524 FB1C     		adds	r3, r7, #3
+ 1077 0526 1B78     		ldrb	r3, [r3]
+ 1078 0528 DA00     		lsls	r2, r3, #3
+ 1079 052a 7B1C     		adds	r3, r7, #1
+ 1080 052c 1B78     		ldrb	r3, [r3]
+ 1081 052e D218     		adds	r2, r2, r3
+ 1082 0530 2D49     		ldr	r1, .L60
+ 1083 0532 8023     		movs	r3, #128
+ 1084 0534 DB00     		lsls	r3, r3, #3
+ 1085 0536 8A18     		adds	r2, r1, r2
+ 1086 0538 D318     		adds	r3, r2, r3
+ 1087 053a 1B78     		ldrb	r3, [r3]
+ 1088 053c 002B     		cmp	r3, #0
+ 1089 053e 43D0     		beq	.L56
+ 1090              	.LBB6:
+ 255:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			uint8_t controller;
+ 256:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			if(add < LCD_WIDTH/2){
+ 1091              		.loc 1 256 0
+ 1092 0540 8023     		movs	r3, #128
+ 1093 0542 5B08     		lsrs	r3, r3, #1
+ 1094 0544 DBB2     		uxtb	r3, r3
+ 1095 0546 FA1C     		adds	r2, r7, #3
+ 1096 0548 1278     		ldrb	r2, [r2]
+ 1097 054a 9A42     		cmp	r2, r3
+ 1098 054c 03D2     		bcs	.L57
+ 257:/home/oscar/GitHub/Pong/graphicdisplay.c **** 				controller = B_CS1;
+ 1099              		.loc 1 257 0
+ 1100 054e BB1C     		adds	r3, r7, #2
+ 1101 0550 0822     		movs	r2, #8
+ 1102 0552 1A70     		strb	r2, [r3]
+ 1103 0554 0AE0     		b	.L58
+ 1104              	.L57:
+ 258:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			}else{
+ 259:/home/oscar/GitHub/Pong/graphicdisplay.c **** 				controller = B_CS2;
+ 1105              		.loc 1 259 0
+ 1106 0556 BB1C     		adds	r3, r7, #2
+ 1107 0558 1022     		movs	r2, #16
+ 1108 055a 1A70     		strb	r2, [r3]
+ 260:/home/oscar/GitHub/Pong/graphicdisplay.c **** 				add = add - (LCD_WIDTH/2);
+ 1109              		.loc 1 260 0
+ 1110 055c 8023     		movs	r3, #128
+ 1111 055e 5B08     		lsrs	r3, r3, #1
+ 1112 0560 DAB2     		uxtb	r2, r3
+ 1113 0562 FB1C     		adds	r3, r7, #3
+ 1114 0564 F91C     		adds	r1, r7, #3
+ 1115 0566 0978     		ldrb	r1, [r1]
+ 1116 0568 8A1A     		subs	r2, r1, r2
+ 1117 056a 1A70     		strb	r2, [r3]
+ 1118              	.L58:
+ 261:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			}
+ 262:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 263:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_write_command(LCD_SET_PAGE | page, controller); /* Ordningen i vilken man ställer page 
+ 1119              		.loc 1 263 0
+ 1120 056c 7B1C     		adds	r3, r7, #1
+ 1121 056e 1B78     		ldrb	r3, [r3]
+ 1122 0570 4822     		movs	r2, #72
+ 1123 0572 5242     		rsbs	r2, r2, #0
+ 1124 0574 1343     		orrs	r3, r2
+ 1125 0576 DAB2     		uxtb	r2, r3
+ 1126 0578 BB1C     		adds	r3, r7, #2
+ 1127 057a 1B78     		ldrb	r3, [r3]
+ 1128 057c 1900     		movs	r1, r3
+ 1129 057e 1000     		movs	r0, r2
+ 1130 0580 FFF77AFE 		bl	graphic_write_command
+ 264:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_write_command(LCD_SET_ADD | add, controller);
+ 1131              		.loc 1 264 0
+ 1132 0584 FB1C     		adds	r3, r7, #3
+ 1133 0586 1B78     		ldrb	r3, [r3]
+ 1134 0588 4022     		movs	r2, #64
+ 1135 058a 1343     		orrs	r3, r2
+ 1136 058c DAB2     		uxtb	r2, r3
+ 1137 058e BB1C     		adds	r3, r7, #2
+ 1138 0590 1B78     		ldrb	r3, [r3]
+ 1139 0592 1900     		movs	r1, r3
+ 1140 0594 1000     		movs	r0, r2
+ 1141 0596 FFF76FFE 		bl	graphic_write_command
+ 265:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			graphic_write_data(buffer.buf[i], controller);
+ 1142              		.loc 1 265 0
+ 1143 059a 134A     		ldr	r2, .L60
+ 1144 059c 7B68     		ldr	r3, [r7, #4]
+ 1145 059e D318     		adds	r3, r2, r3
+ 1146 05a0 1A78     		ldrb	r2, [r3]
+ 1147 05a2 BB1C     		adds	r3, r7, #2
+ 1148 05a4 1B78     		ldrb	r3, [r3]
+ 1149 05a6 1900     		movs	r1, r3
+ 1150 05a8 1000     		movs	r0, r2
+ 1151 05aa FFF785FE 		bl	graphic_write_data
+ 266:/home/oscar/GitHub/Pong/graphicdisplay.c **** 			buffer.changed[8*add+page] = 0b00000000;
+ 1152              		.loc 1 266 0
+ 1153 05ae FB1C     		adds	r3, r7, #3
+ 1154 05b0 1B78     		ldrb	r3, [r3]
+ 1155 05b2 DA00     		lsls	r2, r3, #3
+ 1156 05b4 7B1C     		adds	r3, r7, #1
+ 1157 05b6 1B78     		ldrb	r3, [r3]
+ 1158 05b8 D218     		adds	r2, r2, r3
+ 1159 05ba 0B49     		ldr	r1, .L60
+ 1160 05bc 8023     		movs	r3, #128
+ 1161 05be DB00     		lsls	r3, r3, #3
+ 1162 05c0 8A18     		adds	r2, r1, r2
+ 1163 05c2 D318     		adds	r3, r2, r3
+ 1164 05c4 0022     		movs	r2, #0
+ 1165 05c6 1A70     		strb	r2, [r3]
+ 1166              	.L56:
+ 1167              	.LBE6:
+ 1168              	.LBE5:
+ 249:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 1169              		.loc 1 249 0 discriminator 2
+ 1170 05c8 7B68     		ldr	r3, [r7, #4]
+ 1171 05ca 0133     		adds	r3, r3, #1
+ 1172 05cc 7B60     		str	r3, [r7, #4]
+ 1173              	.L55:
+ 249:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 1174              		.loc 1 249 0 is_stmt 0 discriminator 1
+ 1175 05ce 4023     		movs	r3, #64
+ 1176 05d0 DB08     		lsrs	r3, r3, #3
+ 1177 05d2 DBB2     		uxtb	r3, r3
+ 1178 05d4 8022     		movs	r2, #128
+ 1179 05d6 5343     		muls	r3, r2
+ 1180 05d8 1A00     		movs	r2, r3
+ 1181 05da 7B68     		ldr	r3, [r7, #4]
+ 1182 05dc 9342     		cmp	r3, r2
+ 1183 05de 97D3     		bcc	.L59
+ 1184              	.LBE4:
+ 267:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		}
+ 268:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 269:/home/oscar/GitHub/Pong/graphicdisplay.c **** 		
+ 270:/home/oscar/GitHub/Pong/graphicdisplay.c **** 	}
+ 271:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 272:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 273:/home/oscar/GitHub/Pong/graphicdisplay.c **** 
+ 274:/home/oscar/GitHub/Pong/graphicdisplay.c **** }...
+ 1185              		.loc 1 274 0 is_stmt 1
+ 1186 05e0 C046     		nop
+ 1187 05e2 BD46     		mov	sp, r7
+ 1188 05e4 02B0     		add	sp, sp, #8
+ 1189              		@ sp needed
+ 1190 05e6 80BD     		pop	{r7, pc}
+ 1191              	.L61:
+ 1192              		.align	2
+ 1193              	.L60:
+ 1194 05e8 00000000 		.word	buffer
+ 1195              		.cfi_endproc
+ 1196              	.LFE12:
+ 1198              	.Letext0:
+ 1199              		.file 2 "include/intdef.h"
+ 1200              		.file 3 "include/GPIO.h"
+ 1201              		.file 4 "include/delay.h"
+ 1202              		.file 5 "include/graphicdisplay.h"
 >>>>>>> Stashed changes

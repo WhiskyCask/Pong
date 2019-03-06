@@ -90,7 +90,7 @@ void delay_irq(uint32_t count)
 /* Should be moved to a better place in the near future */
 void init_systick_irq_handler(void)
 {
-	*SCB_VTOR = NEW_VTOR; /* Relokera undantagsvektorn till basadress 0x2001C000 */
+	*SCB_VTOR = (uint32_t) NEW_VTOR; /* Relokera undantagsvektorn till basadress 0x2001C000 */
 	*((void (**)(void)) NEW_VTOR + 0x3C) = systick_irq_handler;
 	systick_flag = 0;
 	

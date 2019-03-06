@@ -49,24 +49,21 @@ int main(void)
 			case 1:
 				leftpaddle.set_vel(&leftpaddle, 0, -2);
 				break;
+				
 			case 2:
-				ball.set_vel(&ball, 0, -4);
 				break;
 				
-			case 0xA:
+			case 3:
 				rightpaddle.set_vel(&rightpaddle, 0, -2);
 				break;
 				
 			case 4:
-				ball.set_vel(&ball, -4, 0);
 				break;
 				
 			case 5:
-				ball.set_vel(&ball, 0, 0);
 				break;
 				
 			case 6:
-				ball.set_vel(&ball, 4, 0);
 				break;
 				
 			case 7:
@@ -74,16 +71,14 @@ int main(void)
 				break;
 				
 			case 8:
-				ball.set_vel(&ball, 0, 4);
 				break;
 				
-			case 0xC:
+			case 9:
 				rightpaddle.set_vel(&rightpaddle, 0, 2);
 				break;
 			
 			default:
 				/* Om ingen knapp är nedtryckt, nollställ hastigheten */
-				//ball.set_vel(&ball, 0, 0);
 				leftpaddle.set_vel(&leftpaddle, 0, 0);
 				rightpaddle.set_vel(&rightpaddle, 0, 0);
 

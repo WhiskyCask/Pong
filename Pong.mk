@@ -13,7 +13,11 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Oscar Liljenzin
+<<<<<<< Updated upstream
 Date                   :=05/03/19
+=======
+Date                   :=06/03/19
+>>>>>>> Stashed changes
 CodeLitePath           :=/home/oscar/.codelite
 LinkerName             :=/usr/bin/arm-none-eabi-g++
 SharedObjectLinkerName :=/usr/bin/arm-none-eabi-g++ -shared -fPIC
