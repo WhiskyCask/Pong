@@ -70,7 +70,9 @@ void move_object(Object * object){
 	draw_object(object);
 }
 
-void intersects(Object * o1, Object * o2){
+bool intersects(Object * o1, Object * o2){
+	
+	
 	
 }
 
@@ -79,7 +81,7 @@ void move_ball(Object * object){
 	translate_object(object);
 	
 	/* Kollision med paddle? Ändra riktning */
-	if(intersects())
+	//if(intersects()) /* Utkommenterad tillfälligt för att koden skall kompilera */
 
 	/* På väg över långsidorna? Ändra riktning */
 	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {

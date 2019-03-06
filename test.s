@@ -96,6 +96,7 @@
   96              		.fpu softvfp
   98              	draw_object:
   99              	.LFB0:
+<<<<<<< Updated upstream
  100              		.file 1 "C:/Users/isake/Documents/Laboration5/Pong/object.c"
    1:C:/Users/isake/Documents/Laboration5/Pong\object.c **** /*
    2:C:/Users/isake/Documents/Laboration5/Pong\object.c ****  * 
@@ -132,6 +133,42 @@
   33:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void draw_object(Object * object)
   34:C:/Users/isake/Documents/Laboration5/Pong\object.c **** {
  101              		.loc 1 34 0
+=======
+ 100              		.file 1 "/home/oscar/GitHub/Pong/object.c"
+   1:/home/oscar/GitHub/Pong/object.c **** /*
+   2:/home/oscar/GitHub/Pong/object.c ****  * 
+   3:/home/oscar/GitHub/Pong/object.c ****  * 	object.c
+   4:/home/oscar/GitHub/Pong/object.c ****  *
+   5:/home/oscar/GitHub/Pong/object.c ****  */
+   6:/home/oscar/GitHub/Pong/object.c **** 
+   7:/home/oscar/GitHub/Pong/object.c **** #include "object.h"
+   8:/home/oscar/GitHub/Pong/object.c **** #include "graphicdisplay.h"
+   9:/home/oscar/GitHub/Pong/object.c **** 
+  10:/home/oscar/GitHub/Pong/object.c **** const Geometry geometry_ball = { 12, 4, 4, {
+  11:/home/oscar/GitHub/Pong/object.c **** 			{0, 1}, {0, 2}, 
+  12:/home/oscar/GitHub/Pong/object.c **** 	{1, 0}, {1, 1}, {1, 2}, {1, 3},
+  13:/home/oscar/GitHub/Pong/object.c **** 	{2, 0}, {2, 1}, {2, 2}, {2, 3},
+  14:/home/oscar/GitHub/Pong/object.c **** 			{3, 1}, {3, 2}
+  15:/home/oscar/GitHub/Pong/object.c **** 	}
+  16:/home/oscar/GitHub/Pong/object.c **** };
+  17:/home/oscar/GitHub/Pong/object.c **** 
+  18:/home/oscar/GitHub/Pong/object.c **** const Geometry geometry_paddle = { 12, 2, 8, {
+  19:/home/oscar/GitHub/Pong/object.c **** 	{0,0}, {1,0},
+  20:/home/oscar/GitHub/Pong/object.c **** 	{0,1}, {1,1},
+  21:/home/oscar/GitHub/Pong/object.c **** 	{0,2}, {1,2},
+  22:/home/oscar/GitHub/Pong/object.c **** 	{0,3}, {1,3},
+  23:/home/oscar/GitHub/Pong/object.c **** 	{0,4}, {1,4},
+  24:/home/oscar/GitHub/Pong/object.c **** 	{0,5}, {1,5},
+  25:/home/oscar/GitHub/Pong/object.c **** 	{0,6}, {1,6},
+  26:/home/oscar/GitHub/Pong/object.c **** 	{0,7}, {1,7}
+  27:/home/oscar/GitHub/Pong/object.c **** 	}
+  28:/home/oscar/GitHub/Pong/object.c **** };
+  29:/home/oscar/GitHub/Pong/object.c **** 
+  30:/home/oscar/GitHub/Pong/object.c **** 
+  31:/home/oscar/GitHub/Pong/object.c **** void draw_object(Object * object)
+  32:/home/oscar/GitHub/Pong/object.c **** {
+ 101              		.loc 1 32 0
+>>>>>>> Stashed changes
  102              		.cfi_startproc
  103              		@ args = 0, pretend = 0, frame = 16
  104              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -146,16 +183,26 @@
  113              		.cfi_def_cfa_register 7
  114 0006 7860     		str	r0, [r7, #4]
  115              	.LBB2:
+<<<<<<< Updated upstream
   35:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
  116              		.loc 1 35 0
+=======
+  33:/home/oscar/GitHub/Pong/object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 116              		.loc 1 33 0
+>>>>>>> Stashed changes
  117 0008 0F23     		movs	r3, #15
  118 000a FB18     		adds	r3, r7, r3
  119 000c 0022     		movs	r2, #0
  120 000e 1A70     		strb	r2, [r3]
  121 0010 27E0     		b	.L2
  122              	.L3:
+<<<<<<< Updated upstream
   36:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 		pixel(object->geometry->points[i].x + object->pos_x, object->geometry->points[i].y + object->pos_
  123              		.loc 1 36 0 discriminator 3
+=======
+  34:/home/oscar/GitHub/Pong/object.c **** 		pixel(object->geometry->points[i].x + object->pos_x, object->geometry->points[i].y + object->pos_
+ 123              		.loc 1 34 0 discriminator 3
+>>>>>>> Stashed changes
  124 0012 7B68     		ldr	r3, [r7, #4]
  125 0014 1A68     		ldr	r2, [r3]
  126 0016 0F21     		movs	r1, #15
@@ -189,8 +236,13 @@
  154 004e 0122     		movs	r2, #1
  155 0050 1900     		movs	r1, r3
  156 0052 FFF7FEFF 		bl	pixel
+<<<<<<< Updated upstream
   35:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
  157              		.loc 1 35 0 discriminator 3
+=======
+  33:/home/oscar/GitHub/Pong/object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 157              		.loc 1 33 0 discriminator 3
+>>>>>>> Stashed changes
  158 0056 2100     		movs	r1, r4
  159 0058 7B18     		adds	r3, r7, r1
  160 005a 1A78     		ldrb	r2, [r3]
@@ -198,8 +250,13 @@
  162 005e 0132     		adds	r2, r2, #1
  163 0060 1A70     		strb	r2, [r3]
  164              	.L2:
+<<<<<<< Updated upstream
   35:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
  165              		.loc 1 35 0 is_stmt 0 discriminator 1
+=======
+  33:/home/oscar/GitHub/Pong/object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 165              		.loc 1 33 0 is_stmt 0 discriminator 1
+>>>>>>> Stashed changes
  166 0062 7B68     		ldr	r3, [r7, #4]
  167 0064 1B68     		ldr	r3, [r3]
  168 0066 1B78     		ldrb	r3, [r3]
@@ -209,9 +266,15 @@
  172 006e 9A42     		cmp	r2, r3
  173 0070 CFD3     		bcc	.L3
  174              	.LBE2:
+<<<<<<< Updated upstream
   37:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
   38:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
  175              		.loc 1 38 0 is_stmt 1
+=======
+  35:/home/oscar/GitHub/Pong/object.c **** 	}
+  36:/home/oscar/GitHub/Pong/object.c **** }
+ 175              		.loc 1 36 0 is_stmt 1
+>>>>>>> Stashed changes
  176 0072 C046     		nop
  177 0074 BD46     		mov	sp, r7
  178 0076 05B0     		add	sp, sp, #20
@@ -227,10 +290,17 @@
  189              		.fpu softvfp
  191              	clear_object:
  192              	.LFB1:
+<<<<<<< Updated upstream
   39:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
   40:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void clear_object(Object * object)
   41:C:/Users/isake/Documents/Laboration5/Pong\object.c **** {
  193              		.loc 1 41 0
+=======
+  37:/home/oscar/GitHub/Pong/object.c **** 
+  38:/home/oscar/GitHub/Pong/object.c **** void clear_object(Object * object)
+  39:/home/oscar/GitHub/Pong/object.c **** {
+ 193              		.loc 1 39 0
+>>>>>>> Stashed changes
  194              		.cfi_startproc
  195              		@ args = 0, pretend = 0, frame = 16
  196              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -245,16 +315,26 @@
  205              		.cfi_def_cfa_register 7
  206 0080 7860     		str	r0, [r7, #4]
  207              	.LBB3:
+<<<<<<< Updated upstream
   42:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
  208              		.loc 1 42 0
+=======
+  40:/home/oscar/GitHub/Pong/object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 208              		.loc 1 40 0
+>>>>>>> Stashed changes
  209 0082 0F23     		movs	r3, #15
  210 0084 FB18     		adds	r3, r7, r3
  211 0086 0022     		movs	r2, #0
  212 0088 1A70     		strb	r2, [r3]
  213 008a 27E0     		b	.L5
  214              	.L6:
+<<<<<<< Updated upstream
   43:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 		pixel(object->geometry->points[i].x + object->pos_x, object->geometry->points[i].y + object->pos_
  215              		.loc 1 43 0 discriminator 3
+=======
+  41:/home/oscar/GitHub/Pong/object.c **** 		pixel(object->geometry->points[i].x + object->pos_x, object->geometry->points[i].y + object->pos_
+ 215              		.loc 1 41 0 discriminator 3
+>>>>>>> Stashed changes
  216 008c 7B68     		ldr	r3, [r7, #4]
  217 008e 1A68     		ldr	r2, [r3]
  218 0090 0F21     		movs	r1, #15
@@ -288,8 +368,13 @@
  246 00c8 0022     		movs	r2, #0
  247 00ca 1900     		movs	r1, r3
  248 00cc FFF7FEFF 		bl	pixel
+<<<<<<< Updated upstream
   42:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
  249              		.loc 1 42 0 discriminator 3
+=======
+  40:/home/oscar/GitHub/Pong/object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 249              		.loc 1 40 0 discriminator 3
+>>>>>>> Stashed changes
  250 00d0 2100     		movs	r1, r4
  251 00d2 7B18     		adds	r3, r7, r1
  252 00d4 1A78     		ldrb	r2, [r3]
@@ -297,8 +382,13 @@
  254 00d8 0132     		adds	r2, r2, #1
  255 00da 1A70     		strb	r2, [r3]
  256              	.L5:
+<<<<<<< Updated upstream
   42:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
  257              		.loc 1 42 0 is_stmt 0 discriminator 1
+=======
+  40:/home/oscar/GitHub/Pong/object.c **** 	for (uint8_t i = 0; i < object->geometry->num_points; i++) {
+ 257              		.loc 1 40 0 is_stmt 0 discriminator 1
+>>>>>>> Stashed changes
  258 00dc 7B68     		ldr	r3, [r7, #4]
  259 00de 1B68     		ldr	r3, [r3]
  260 00e0 1B78     		ldrb	r3, [r3]
@@ -308,9 +398,15 @@
  264 00e8 9A42     		cmp	r2, r3
  265 00ea CFD3     		bcc	.L6
  266              	.LBE3:
+<<<<<<< Updated upstream
   44:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	}
   45:C:/Users/isake/Documents/Laboration5/Pong\object.c **** }
  267              		.loc 1 45 0 is_stmt 1
+=======
+  42:/home/oscar/GitHub/Pong/object.c **** 	}
+  43:/home/oscar/GitHub/Pong/object.c **** }
+ 267              		.loc 1 43 0 is_stmt 1
+>>>>>>> Stashed changes
  268 00ec C046     		nop
  269 00ee BD46     		mov	sp, r7
  270 00f0 05B0     		add	sp, sp, #20
@@ -319,16 +415,28 @@
  273              		.cfi_endproc
  274              	.LFE1:
  276              		.align	1
+<<<<<<< Updated upstream
  277              		.global	translate_object
+=======
+ 277              		.global	move_object
+>>>>>>> Stashed changes
  278              		.syntax unified
  279              		.code	16
  280              		.thumb_func
  281              		.fpu softvfp
+<<<<<<< Updated upstream
  283              	translate_object:
  284              	.LFB2:
   46:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 
   47:C:/Users/isake/Documents/Laboration5/Pong\object.c **** void translate_object(Object * object) {
  285              		.loc 1 47 0
+=======
+ 283              	move_object:
+ 284              	.LFB2:
+  44:/home/oscar/GitHub/Pong/object.c **** 
+  45:/home/oscar/GitHub/Pong/object.c **** void move_object(Object * object) {
+ 285              		.loc 1 45 0
+>>>>>>> Stashed changes
  286              		.cfi_startproc
  287              		@ args = 0, pretend = 0, frame = 8
  288              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -341,6 +449,7 @@
  295 00f8 00AF     		add	r7, sp, #0
  296              		.cfi_def_cfa_register 7
  297 00fa 7860     		str	r0, [r7, #4]
+<<<<<<< Updated upstream
   48:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
   49:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
   50:C:/Users/isake/Documents/Laboration5/Pong\object.c **** 	
@@ -924,3 +1033,383 @@
  813              		.file 3 "include/object.h"
  814              		.file 4 "include/GPIO.h"
  815              		.file 5 "include/graphicdisplay.h"
+=======
+  46:/home/oscar/GitHub/Pong/object.c **** 	
+  47:/home/oscar/GitHub/Pong/object.c **** 	clear_object(object);
+ 298              		.loc 1 47 0
+ 299 00fc 7B68     		ldr	r3, [r7, #4]
+ 300 00fe 1800     		movs	r0, r3
+ 301 0100 FFF7FEFF 		bl	clear_object
+  48:/home/oscar/GitHub/Pong/object.c **** 	
+  49:/home/oscar/GitHub/Pong/object.c **** 	object->pos_x += object->vel_x;
+ 302              		.loc 1 49 0
+ 303 0104 7B68     		ldr	r3, [r7, #4]
+ 304 0106 1B79     		ldrb	r3, [r3, #4]
+ 305 0108 5BB2     		sxtb	r3, r3
+ 306 010a DAB2     		uxtb	r2, r3
+ 307 010c 7B68     		ldr	r3, [r7, #4]
+ 308 010e 9B79     		ldrb	r3, [r3, #6]
+ 309 0110 5BB2     		sxtb	r3, r3
+ 310 0112 DBB2     		uxtb	r3, r3
+ 311 0114 D318     		adds	r3, r2, r3
+ 312 0116 DBB2     		uxtb	r3, r3
+ 313 0118 5AB2     		sxtb	r2, r3
+ 314 011a 7B68     		ldr	r3, [r7, #4]
+ 315 011c 1A71     		strb	r2, [r3, #4]
+  50:/home/oscar/GitHub/Pong/object.c **** 	object->pos_y += object->vel_y;
+ 316              		.loc 1 50 0
+ 317 011e 7B68     		ldr	r3, [r7, #4]
+ 318 0120 5B79     		ldrb	r3, [r3, #5]
+ 319 0122 5BB2     		sxtb	r3, r3
+ 320 0124 DAB2     		uxtb	r2, r3
+ 321 0126 7B68     		ldr	r3, [r7, #4]
+ 322 0128 DB79     		ldrb	r3, [r3, #7]
+ 323 012a 5BB2     		sxtb	r3, r3
+ 324 012c DBB2     		uxtb	r3, r3
+ 325 012e D318     		adds	r3, r2, r3
+ 326 0130 DBB2     		uxtb	r3, r3
+ 327 0132 5AB2     		sxtb	r2, r3
+ 328 0134 7B68     		ldr	r3, [r7, #4]
+ 329 0136 5A71     		strb	r2, [r3, #5]
+  51:/home/oscar/GitHub/Pong/object.c **** 	
+  52:/home/oscar/GitHub/Pong/object.c **** 	/* Om objektet i fråga är påväg över någon kant, skifta riktning */
+  53:/home/oscar/GitHub/Pong/object.c **** 	if (!(0 <= object->pos_x && object->pos_x + object->geometry->width < LCD_WIDTH)) {
+ 330              		.loc 1 53 0
+ 331 0138 7B68     		ldr	r3, [r7, #4]
+ 332 013a 1B79     		ldrb	r3, [r3, #4]
+ 333 013c 5BB2     		sxtb	r3, r3
+ 334 013e 002B     		cmp	r3, #0
+ 335 0140 0BDB     		blt	.L8
+ 336              		.loc 1 53 0 is_stmt 0 discriminator 1
+ 337 0142 7B68     		ldr	r3, [r7, #4]
+ 338 0144 1B79     		ldrb	r3, [r3, #4]
+ 339 0146 5BB2     		sxtb	r3, r3
+ 340 0148 1A00     		movs	r2, r3
+ 341 014a 7B68     		ldr	r3, [r7, #4]
+ 342 014c 1B68     		ldr	r3, [r3]
+ 343 014e 5B78     		ldrb	r3, [r3, #1]
+ 344 0150 D318     		adds	r3, r2, r3
+ 345 0152 174A     		ldr	r2, .L12
+ 346 0154 1278     		ldrb	r2, [r2]
+ 347 0156 9342     		cmp	r3, r2
+ 348 0158 08DB     		blt	.L9
+ 349              	.L8:
+  54:/home/oscar/GitHub/Pong/object.c **** 		object->vel_x *= -1;
+ 350              		.loc 1 54 0 is_stmt 1
+ 351 015a 7B68     		ldr	r3, [r7, #4]
+ 352 015c 9B79     		ldrb	r3, [r3, #6]
+ 353 015e 5BB2     		sxtb	r3, r3
+ 354 0160 DBB2     		uxtb	r3, r3
+ 355 0162 5B42     		rsbs	r3, r3, #0
+ 356 0164 DBB2     		uxtb	r3, r3
+ 357 0166 5AB2     		sxtb	r2, r3
+ 358 0168 7B68     		ldr	r3, [r7, #4]
+ 359 016a 9A71     		strb	r2, [r3, #6]
+ 360              	.L9:
+  55:/home/oscar/GitHub/Pong/object.c **** 	}
+  56:/home/oscar/GitHub/Pong/object.c **** 	
+  57:/home/oscar/GitHub/Pong/object.c **** 	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {
+ 361              		.loc 1 57 0
+ 362 016c 7B68     		ldr	r3, [r7, #4]
+ 363 016e 5B79     		ldrb	r3, [r3, #5]
+ 364 0170 5BB2     		sxtb	r3, r3
+ 365 0172 002B     		cmp	r3, #0
+ 366 0174 0BDB     		blt	.L10
+ 367              		.loc 1 57 0 is_stmt 0 discriminator 1
+ 368 0176 7B68     		ldr	r3, [r7, #4]
+ 369 0178 5B79     		ldrb	r3, [r3, #5]
+ 370 017a 5BB2     		sxtb	r3, r3
+ 371 017c 1A00     		movs	r2, r3
+ 372 017e 7B68     		ldr	r3, [r7, #4]
+ 373 0180 1B68     		ldr	r3, [r3]
+ 374 0182 9B78     		ldrb	r3, [r3, #2]
+ 375 0184 D318     		adds	r3, r2, r3
+ 376 0186 0B4A     		ldr	r2, .L12+4
+ 377 0188 1278     		ldrb	r2, [r2]
+ 378 018a 9342     		cmp	r3, r2
+ 379 018c 08DB     		blt	.L11
+ 380              	.L10:
+  58:/home/oscar/GitHub/Pong/object.c **** 		object->vel_y *= -1;
+ 381              		.loc 1 58 0 is_stmt 1
+ 382 018e 7B68     		ldr	r3, [r7, #4]
+ 383 0190 DB79     		ldrb	r3, [r3, #7]
+ 384 0192 5BB2     		sxtb	r3, r3
+ 385 0194 DBB2     		uxtb	r3, r3
+ 386 0196 5B42     		rsbs	r3, r3, #0
+ 387 0198 DBB2     		uxtb	r3, r3
+ 388 019a 5AB2     		sxtb	r2, r3
+ 389 019c 7B68     		ldr	r3, [r7, #4]
+ 390 019e DA71     		strb	r2, [r3, #7]
+ 391              	.L11:
+  59:/home/oscar/GitHub/Pong/object.c **** 	}
+  60:/home/oscar/GitHub/Pong/object.c **** 	
+  61:/home/oscar/GitHub/Pong/object.c **** 	draw_object(object);
+ 392              		.loc 1 61 0
+ 393 01a0 7B68     		ldr	r3, [r7, #4]
+ 394 01a2 1800     		movs	r0, r3
+ 395 01a4 FFF7FEFF 		bl	draw_object
+  62:/home/oscar/GitHub/Pong/object.c **** 	
+  63:/home/oscar/GitHub/Pong/object.c **** }
+ 396              		.loc 1 63 0
+ 397 01a8 C046     		nop
+ 398 01aa BD46     		mov	sp, r7
+ 399 01ac 02B0     		add	sp, sp, #8
+ 400              		@ sp needed
+ 401 01ae 80BD     		pop	{r7, pc}
+ 402              	.L13:
+ 403              		.align	2
+ 404              	.L12:
+ 405 01b0 00000000 		.word	LCD_WIDTH
+ 406 01b4 00000000 		.word	LCD_HEIGHT
+ 407              		.cfi_endproc
+ 408              	.LFE2:
+ 410              		.align	1
+ 411              		.global	set_object_vel
+ 412              		.syntax unified
+ 413              		.code	16
+ 414              		.thumb_func
+ 415              		.fpu softvfp
+ 417              	set_object_vel:
+ 418              	.LFB3:
+  64:/home/oscar/GitHub/Pong/object.c **** 
+  65:/home/oscar/GitHub/Pong/object.c **** void set_object_vel(Object * object, int8_t vel_x, int8_t vel_y)
+  66:/home/oscar/GitHub/Pong/object.c **** {
+ 419              		.loc 1 66 0
+ 420              		.cfi_startproc
+ 421              		@ args = 0, pretend = 0, frame = 8
+ 422              		@ frame_needed = 1, uses_anonymous_args = 0
+ 423 01b8 80B5     		push	{r7, lr}
+ 424              		.cfi_def_cfa_offset 8
+ 425              		.cfi_offset 7, -8
+ 426              		.cfi_offset 14, -4
+ 427 01ba 82B0     		sub	sp, sp, #8
+ 428              		.cfi_def_cfa_offset 16
+ 429 01bc 00AF     		add	r7, sp, #0
+ 430              		.cfi_def_cfa_register 7
+ 431 01be 7860     		str	r0, [r7, #4]
+ 432 01c0 0800     		movs	r0, r1
+ 433 01c2 1100     		movs	r1, r2
+ 434 01c4 FB1C     		adds	r3, r7, #3
+ 435 01c6 021C     		adds	r2, r0, #0
+ 436 01c8 1A70     		strb	r2, [r3]
+ 437 01ca BB1C     		adds	r3, r7, #2
+ 438 01cc 0A1C     		adds	r2, r1, #0
+ 439 01ce 1A70     		strb	r2, [r3]
+  67:/home/oscar/GitHub/Pong/object.c **** 	object->vel_x = vel_x;
+ 440              		.loc 1 67 0
+ 441 01d0 7B68     		ldr	r3, [r7, #4]
+ 442 01d2 FA1C     		adds	r2, r7, #3
+ 443 01d4 1278     		ldrb	r2, [r2]
+ 444 01d6 9A71     		strb	r2, [r3, #6]
+  68:/home/oscar/GitHub/Pong/object.c **** 	object->vel_y = vel_y;
+ 445              		.loc 1 68 0
+ 446 01d8 7B68     		ldr	r3, [r7, #4]
+ 447 01da BA1C     		adds	r2, r7, #2
+ 448 01dc 1278     		ldrb	r2, [r2]
+ 449 01de DA71     		strb	r2, [r3, #7]
+  69:/home/oscar/GitHub/Pong/object.c **** }
+ 450              		.loc 1 69 0
+ 451 01e0 C046     		nop
+ 452 01e2 BD46     		mov	sp, r7
+ 453 01e4 02B0     		add	sp, sp, #8
+ 454              		@ sp needed
+ 455 01e6 80BD     		pop	{r7, pc}
+ 456              		.cfi_endproc
+ 457              	.LFE3:
+ 459              		.align	1
+ 460              		.global	create_ball
+ 461              		.syntax unified
+ 462              		.code	16
+ 463              		.thumb_func
+ 464              		.fpu softvfp
+ 466              	create_ball:
+ 467              	.LFB4:
+  70:/home/oscar/GitHub/Pong/object.c **** 
+  71:/home/oscar/GitHub/Pong/object.c **** Object create_ball(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y) {
+ 468              		.loc 1 71 0
+ 469              		.cfi_startproc
+ 470              		@ args = 4, pretend = 0, frame = 8
+ 471              		@ frame_needed = 1, uses_anonymous_args = 0
+ 472 01e8 90B5     		push	{r4, r7, lr}
+ 473              		.cfi_def_cfa_offset 12
+ 474              		.cfi_offset 4, -12
+ 475              		.cfi_offset 7, -8
+ 476              		.cfi_offset 14, -4
+ 477 01ea 83B0     		sub	sp, sp, #12
+ 478              		.cfi_def_cfa_offset 24
+ 479 01ec 00AF     		add	r7, sp, #0
+ 480              		.cfi_def_cfa_register 7
+ 481 01ee 7860     		str	r0, [r7, #4]
+ 482 01f0 0C00     		movs	r4, r1
+ 483 01f2 1000     		movs	r0, r2
+ 484 01f4 1900     		movs	r1, r3
+ 485 01f6 FB1C     		adds	r3, r7, #3
+ 486 01f8 221C     		adds	r2, r4, #0
+ 487 01fa 1A70     		strb	r2, [r3]
+ 488 01fc BB1C     		adds	r3, r7, #2
+ 489 01fe 021C     		adds	r2, r0, #0
+ 490 0200 1A70     		strb	r2, [r3]
+ 491 0202 7B1C     		adds	r3, r7, #1
+ 492 0204 0A1C     		adds	r2, r1, #0
+ 493 0206 1A70     		strb	r2, [r3]
+  72:/home/oscar/GitHub/Pong/object.c **** 	return (Object) {
+ 494              		.loc 1 72 0
+ 495 0208 7B68     		ldr	r3, [r7, #4]
+ 496 020a 114A     		ldr	r2, .L17
+ 497 020c 1A60     		str	r2, [r3]
+ 498 020e 7B68     		ldr	r3, [r7, #4]
+ 499 0210 FA1C     		adds	r2, r7, #3
+ 500 0212 1278     		ldrb	r2, [r2]
+ 501 0214 1A71     		strb	r2, [r3, #4]
+ 502 0216 7B68     		ldr	r3, [r7, #4]
+ 503 0218 BA1C     		adds	r2, r7, #2
+ 504 021a 1278     		ldrb	r2, [r2]
+ 505 021c 5A71     		strb	r2, [r3, #5]
+ 506 021e 7B68     		ldr	r3, [r7, #4]
+ 507 0220 7A1C     		adds	r2, r7, #1
+ 508 0222 1278     		ldrb	r2, [r2]
+ 509 0224 9A71     		strb	r2, [r3, #6]
+ 510 0226 7B68     		ldr	r3, [r7, #4]
+ 511 0228 1822     		movs	r2, #24
+ 512 022a BA18     		adds	r2, r7, r2
+ 513 022c 1278     		ldrb	r2, [r2]
+ 514 022e DA71     		strb	r2, [r3, #7]
+ 515 0230 7B68     		ldr	r3, [r7, #4]
+ 516 0232 084A     		ldr	r2, .L17+4
+ 517 0234 9A60     		str	r2, [r3, #8]
+ 518 0236 7B68     		ldr	r3, [r7, #4]
+ 519 0238 074A     		ldr	r2, .L17+8
+ 520 023a DA60     		str	r2, [r3, #12]
+ 521 023c 7B68     		ldr	r3, [r7, #4]
+ 522 023e 074A     		ldr	r2, .L17+12
+ 523 0240 1A61     		str	r2, [r3, #16]
+ 524 0242 7B68     		ldr	r3, [r7, #4]
+ 525 0244 064A     		ldr	r2, .L17+16
+ 526 0246 5A61     		str	r2, [r3, #20]
+  73:/home/oscar/GitHub/Pong/object.c **** 	&geometry_ball,
+  74:/home/oscar/GitHub/Pong/object.c **** 	pos_x, pos_y,
+  75:/home/oscar/GitHub/Pong/object.c **** 	vel_x, vel_y,
+  76:/home/oscar/GitHub/Pong/object.c **** 	draw_object,
+  77:/home/oscar/GitHub/Pong/object.c **** 	clear_object,
+  78:/home/oscar/GitHub/Pong/object.c **** 	move_object,
+  79:/home/oscar/GitHub/Pong/object.c **** 	set_object_vel
+  80:/home/oscar/GitHub/Pong/object.c **** 	};
+  81:/home/oscar/GitHub/Pong/object.c **** }
+ 527              		.loc 1 81 0
+ 528 0248 7868     		ldr	r0, [r7, #4]
+ 529 024a BD46     		mov	sp, r7
+ 530 024c 03B0     		add	sp, sp, #12
+ 531              		@ sp needed
+ 532 024e 90BD     		pop	{r4, r7, pc}
+ 533              	.L18:
+ 534              		.align	2
+ 535              	.L17:
+ 536 0250 00000000 		.word	geometry_ball
+ 537 0254 00000000 		.word	draw_object
+ 538 0258 00000000 		.word	clear_object
+ 539 025c 00000000 		.word	move_object
+ 540 0260 00000000 		.word	set_object_vel
+ 541              		.cfi_endproc
+ 542              	.LFE4:
+ 544              		.align	1
+ 545              		.global	create_paddle
+ 546              		.syntax unified
+ 547              		.code	16
+ 548              		.thumb_func
+ 549              		.fpu softvfp
+ 551              	create_paddle:
+ 552              	.LFB5:
+  82:/home/oscar/GitHub/Pong/object.c **** 
+  83:/home/oscar/GitHub/Pong/object.c **** Object create_paddle(int8_t pos_x, int8_t pos_y, int8_t vel_x, int8_t vel_y) {
+ 553              		.loc 1 83 0
+ 554              		.cfi_startproc
+ 555              		@ args = 4, pretend = 0, frame = 8
+ 556              		@ frame_needed = 1, uses_anonymous_args = 0
+ 557 0264 90B5     		push	{r4, r7, lr}
+ 558              		.cfi_def_cfa_offset 12
+ 559              		.cfi_offset 4, -12
+ 560              		.cfi_offset 7, -8
+ 561              		.cfi_offset 14, -4
+ 562 0266 83B0     		sub	sp, sp, #12
+ 563              		.cfi_def_cfa_offset 24
+ 564 0268 00AF     		add	r7, sp, #0
+ 565              		.cfi_def_cfa_register 7
+ 566 026a 7860     		str	r0, [r7, #4]
+ 567 026c 0C00     		movs	r4, r1
+ 568 026e 1000     		movs	r0, r2
+ 569 0270 1900     		movs	r1, r3
+ 570 0272 FB1C     		adds	r3, r7, #3
+ 571 0274 221C     		adds	r2, r4, #0
+ 572 0276 1A70     		strb	r2, [r3]
+ 573 0278 BB1C     		adds	r3, r7, #2
+ 574 027a 021C     		adds	r2, r0, #0
+ 575 027c 1A70     		strb	r2, [r3]
+ 576 027e 7B1C     		adds	r3, r7, #1
+ 577 0280 0A1C     		adds	r2, r1, #0
+ 578 0282 1A70     		strb	r2, [r3]
+  84:/home/oscar/GitHub/Pong/object.c **** 	return (Object) {
+ 579              		.loc 1 84 0
+ 580 0284 7B68     		ldr	r3, [r7, #4]
+ 581 0286 114A     		ldr	r2, .L21
+ 582 0288 1A60     		str	r2, [r3]
+ 583 028a 7B68     		ldr	r3, [r7, #4]
+ 584 028c FA1C     		adds	r2, r7, #3
+ 585 028e 1278     		ldrb	r2, [r2]
+ 586 0290 1A71     		strb	r2, [r3, #4]
+ 587 0292 7B68     		ldr	r3, [r7, #4]
+ 588 0294 BA1C     		adds	r2, r7, #2
+ 589 0296 1278     		ldrb	r2, [r2]
+ 590 0298 5A71     		strb	r2, [r3, #5]
+ 591 029a 7B68     		ldr	r3, [r7, #4]
+ 592 029c 7A1C     		adds	r2, r7, #1
+ 593 029e 1278     		ldrb	r2, [r2]
+ 594 02a0 9A71     		strb	r2, [r3, #6]
+ 595 02a2 7B68     		ldr	r3, [r7, #4]
+ 596 02a4 1822     		movs	r2, #24
+ 597 02a6 BA18     		adds	r2, r7, r2
+ 598 02a8 1278     		ldrb	r2, [r2]
+ 599 02aa DA71     		strb	r2, [r3, #7]
+ 600 02ac 7B68     		ldr	r3, [r7, #4]
+ 601 02ae 084A     		ldr	r2, .L21+4
+ 602 02b0 9A60     		str	r2, [r3, #8]
+ 603 02b2 7B68     		ldr	r3, [r7, #4]
+ 604 02b4 074A     		ldr	r2, .L21+8
+ 605 02b6 DA60     		str	r2, [r3, #12]
+ 606 02b8 7B68     		ldr	r3, [r7, #4]
+ 607 02ba 074A     		ldr	r2, .L21+12
+ 608 02bc 1A61     		str	r2, [r3, #16]
+ 609 02be 7B68     		ldr	r3, [r7, #4]
+ 610 02c0 064A     		ldr	r2, .L21+16
+ 611 02c2 5A61     		str	r2, [r3, #20]
+  85:/home/oscar/GitHub/Pong/object.c **** 	&geometry_paddle,
+  86:/home/oscar/GitHub/Pong/object.c **** 	pos_x, pos_y,
+  87:/home/oscar/GitHub/Pong/object.c **** 	vel_x, vel_y,
+  88:/home/oscar/GitHub/Pong/object.c **** 	draw_object,
+  89:/home/oscar/GitHub/Pong/object.c **** 	clear_object,
+  90:/home/oscar/GitHub/Pong/object.c **** 	move_object,
+  91:/home/oscar/GitHub/Pong/object.c **** 	set_object_vel
+  92:/home/oscar/GitHub/Pong/object.c **** 	};
+  93:/home/oscar/GitHub/Pong/object.c **** }...
+ 612              		.loc 1 93 0
+ 613 02c4 7868     		ldr	r0, [r7, #4]
+ 614 02c6 BD46     		mov	sp, r7
+ 615 02c8 03B0     		add	sp, sp, #12
+ 616              		@ sp needed
+ 617 02ca 90BD     		pop	{r4, r7, pc}
+ 618              	.L22:
+ 619              		.align	2
+ 620              	.L21:
+ 621 02cc 00000000 		.word	geometry_paddle
+ 622 02d0 00000000 		.word	draw_object
+ 623 02d4 00000000 		.word	clear_object
+ 624 02d8 00000000 		.word	move_object
+ 625 02dc 00000000 		.word	set_object_vel
+ 626              		.cfi_endproc
+ 627              	.LFE5:
+ 629              	.Letext0:
+ 630              		.file 2 "include/intdef.h"
+ 631              		.file 3 "include/object.h"
+ 632              		.file 4 "include/GPIO.h"
+ 633              		.file 5 "include/delay.h"
+ 634              		.file 6 "include/graphicdisplay.h"
+>>>>>>> Stashed changes
