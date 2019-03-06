@@ -78,11 +78,15 @@ static void systick_irq_handler(void)
 	else {
 		systick_flag = 1;
 	}
+
 }
 
 void delay_irq(uint32_t count)
 {
 	delay_count = count;
+	#ifdef SIMULATOR
+	delay_count = 256; //couldn't use division, program crashes. Value works for intended purposes
+	#endif
 	delay_1u();
 }
 

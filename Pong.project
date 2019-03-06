@@ -2,7 +2,7 @@
 <CodeLite_Project Name="Pong" Version="10.0.0" InternalType="User templates">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -53,6 +53,7 @@
     <Configuration Name="Debug" CompilerType="Cross GCC ( arm-none-eabi )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-mthumb;-Wall;-march=armv6-m;-msoft-float;-Wa,-adhln=test.s" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="include"/>
+        <Preprocessor Value="SIMULATOR"/>
       </Compiler>
       <Linker Options="-T$(ProjectPath)/md407-ram.x;-L$(ARM_V6LIB) -L$(ARM_GCC_V6LIB);-nostdlib" Required="yes">
         <Library Value="gcc"/>
@@ -100,8 +101,9 @@ monitor restart</PostConnectCommands>
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="Cross GCC ( arm-none-eabi )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O2;-Wall" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-O2;-Wall" C_Options="-g;-O0;-mthumb;-Wall;-march=armv6-m;-msoft-float;-Wa,-adhln=test.s" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <IncludePath Value="include"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
       <Linker Options="-T$(ProjectPath)/md407-ram.x;-L$(ARM_V6LIB) -L$(ARM_GCC_V6LIB);-nostdlib" Required="yes">

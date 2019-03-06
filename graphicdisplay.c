@@ -210,7 +210,7 @@ void graphic_initialise(void)
 void pixel(uint8_t x, uint8_t y, uint8_t set)
 {
 	/*Make sure pixel is within bounds*/
-	if ((x >= LCD_WIDTH && y >= LCD_HEIGHT)) {
+	if ((x >= LCD_WIDTH || y >= LCD_HEIGHT)) {
 		return;
 	}
 	

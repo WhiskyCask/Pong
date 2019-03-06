@@ -79,7 +79,7 @@ void move_ball(Object * object){
 	translate_object(object);
 	
 	/* Kollision med paddle? Ändra riktning */
-	if(intersects())
+	//if(intersects())
 
 	/* På väg över långsidorna? Ändra riktning */
 	if (!(0 <= object->pos_y && object->pos_y + object->geometry->height < LCD_HEIGHT)) {

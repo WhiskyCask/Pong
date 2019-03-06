@@ -10,6 +10,7 @@
 #include "asciidisplay.h"
 #include "keyboard.h"
 #include "object.h"
+#define REFRESHINTERVAL 33333
 
 void startup(void) __attribute__((naked)) __attribute__((section (".start_section")) );
 
@@ -29,22 +30,18 @@ void init_app()
 	GPIO_E->MODER = 0x55555555; /* Sätter hela Port E till utport */
 }
 
-int main(void)
-{
-	init_app();
-	ascii_initialise();
-	graphic_initialise();
-	#ifndef SIMULATOR
-		graphic_clear_screen();
-	#endif
-	
-	Object ball = create_ball(63, 32, 0, 0);
-	Object leftpaddle = create_paddle(4, 32, 0, 0);
-	Object rightpaddle = create_paddle(123, 32, 0, 0);
+Object ball;
+Object leftpaddle;
+Object rightpaddle;
 
-	uint8_t k;
-	while(1) {
-		k = keyb();
+void update_positions(void){
+	ball.move(&ball);
+	leftpaddle.move(&leftpaddle);
+	rightpaddle.move(&rightpaddle);
+}
+
+void update_velocities(void){
+		uint8_t k = keyb();
 		switch(k) {
 			case 1:
 				leftpaddle.set_vel(&leftpaddle, 0, -2);
@@ -88,13 +85,41 @@ int main(void)
 				rightpaddle.set_vel(&rightpaddle, 0, 0);
 
 		}
-		ball.move(&ball);
-		leftpaddle.move(&leftpaddle);
-		rightpaddle.move(&rightpaddle);
-		draw_buffer();
-		delay_milli(40); /* 25 bilder per sekund */		
+}
+
+
+int main(void)
+{
+	init_app();
+	ascii_initialise();
+	graphic_initialise();
+	#ifndef SIMULATOR
+		graphic_clear_screen();
+	#endif
+	
+	ball = create_ball(63, 32, -5, 0);
+	leftpaddle = create_paddle(4, 32, 0, 0);
+	rightpaddle = create_paddle(123, 32, 0, 0);
+	
+	init_systick_irq_handler();
+	delay_irq(REFRESHINTERVAL);
+	
+	while(1){
+		while(!systick_flag){
+				update_velocities(); //Check if key is pressed and if so update the velocity on the corresponding object
+				draw_buffer(); //Can take different amount of time depending on how much has changed on the screen.
+
+			}
+			delay_irq(REFRESHINTERVAL); //Systick_flag should be 1 about once every 30th of a second
+			update_positions();  //Depending on the set velcoities, positions are updated. It is important that positions are updated at a relatively constant rate.
+			
 	}
+	
+	
+
+	
 	
 	return 0;
 	
 }
+
