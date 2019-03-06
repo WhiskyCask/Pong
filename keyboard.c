@@ -5,7 +5,7 @@
 
 #include "keyboard.h"
 
-static const enum {
+enum {
 	
 	ROWS = 4, /* Antalet rader på tangentbordet */
 	COLS = 4 /* Antalet kolumner på tangentbordet */
@@ -73,4 +73,45 @@ uint8_t keyb()
 	}
 	keyboard_activate(0);
 	return 0xFF;
+}
+
+/* Returnerar sant om tanget på (row, col) är nedtryckt */
+static bool check_key(uint8_t row, uint8_t col)
+{
+	uint8_t c = GPIO_D->IDR_HIGH;
+	
+	keyboard_activate(row);
+	
+	if (c & (1 << (col - 1))) {
+		
+		//keyboard_activate(0);
+		
+		return true;
+		
+	}
+	
+	//keyboard_activate(0);
+	
+	return false;
+	
+} 
+
+bool right_paddle_up(void)
+{
+	return check_key(1, 3);
+}
+
+bool right_paddle_down(void)
+{
+	return check_key(3, 3);
+}
+
+bool left_paddle_up(void)
+{
+	return check_key(1, 1);
+}
+
+bool left_paddle_down(void)
+{
+	return check_key(3, 1);
 }
