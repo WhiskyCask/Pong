@@ -16,6 +16,7 @@ struct _STK {
 static volatile struct _STK * const STK = (struct _STK *) 0xE000E010;
 
 volatile uint32_t * const SCB_VTOR = (uint32_t *) 0xE000ED08; /* For relocating interrupt vector table */
+volatile uint32_t * const NEW_VTOR = (uint32_t *) 0x2001C000; /* Location for our new vector table */
 volatile uint32_t systick_flag = 0; /* To tell when the interrupt driven delay-routine is done */
 static volatile uint32_t delay_count; /* Variable to hold our current delay for the interrupt-driven routine */
 
@@ -93,8 +94,8 @@ void delay_irq(uint32_t count)
 /* Should be moved to a better place in the near future */
 void init_systick_irq_handler(void)
 {
-	*SCB_VTOR = 0x2001C000; /* Relokera undantagsvektorn till basadress 0x2001C000 */
-	*((void (**)(void)) 0x2001C03C) = systick_irq_handler;
+	*SCB_VTOR = (uint32_t) NEW_VTOR; /* Relokera undantagsvektorn till basadress 0x2001C000 */
+	*((void (**)(void)) NEW_VTOR + 0x3C) = systick_irq_handler;
 	systick_flag = 0;
 	
 }

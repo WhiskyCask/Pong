@@ -6,7 +6,10 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <stdbool.h>
+
 #include "intdef.h"
+#include "graphicdisplay.h"
 
 #define MAX_POINTS 20
 
